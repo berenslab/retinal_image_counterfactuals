@@ -1,0 +1,38 @@
+timestep_respacing: '200'
+skip_timesteps: 100
+
+lp_custom: 2.0
+lp_custom_value: 0.7
+lpips_sim_lambda: 0
+l2_sim_lambda: 0
+l1_sim_lambda: 0
+range_lambda: 0
+
+deg_cone_projection: 0
+
+clip_guidance_lambda: 0
+classifier_lambda: 0.1
+
+num_imgs: 2
+batch_size: 6
+
+seed: 1
+
+classifier_type: 10
+second_classifier_type: -1
+third_classifier_type: -1
+
+use_blended: false
+
+method: 'dvces'
+gen_type: 'p_sample'
+
+model_output_size: 256
+
+enforce_same_norms: true
+
+diffusion_checkpoint: 'ema_0.9999_290000_eyepacs_extra_data_balancing_4_classes_v1' #'ema_0.9999_300000_eyepacs_trainset_good_excellent'
+
+config_base: 'fundus.yml'
+
+
