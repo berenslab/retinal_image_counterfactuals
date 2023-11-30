@@ -367,8 +367,8 @@ for i, (img_idx, target_classes) in enumerate(selected_vces):
             break    
 """
 
-filenames = os.listdir('samples_eyepacs')
-filenames = sorted(filenames)
+filenames = os.listdir(hps.image_dir)
+filenames = sorted(filenames)[:2]
 print(filenames)
 
 files_list = filenames #* 2
@@ -383,7 +383,7 @@ targets_tensor = torch.zeros(num_imgs, dtype=torch.long)
 labels_tensor = torch.zeros(num_imgs, dtype=torch.long)
 
 for img_name in files_list:#[f'{name}.png' for name in filenames]: #[15, 16, 17, 18][::-1]]: #[1, 2, 3, 4, 5, 6, 7][::-1]]:
-    init_image_pil = Image.open(f'samples_eyepacs/{img_name}').convert("RGB")
+    init_image_pil = Image.open(f'{hps.image_dir}/{img_name}').convert("RGB")
     init_image_pil = init_image_pil.resize((img_size, img_size), Image.LANCZOS)  # type: ignore
     init_image = TF.to_tensor(init_image_pil).to(device).unsqueeze(0)
     print('prepending img', imgs.shape)
@@ -419,7 +419,7 @@ for img_name in files_list:#[f'{name}.png' for name in filenames]: #[15, 16, 17,
 
 
 print('prepending target', targets_tensor.shape)
-targets_ = [0]*len(filenames)
+targets_ = [1]*len(filenames)
 #targets_.extend([1]*len(filenames))
 # targets_.extend([2]*len(filenames))
 # targets_.extend([3]*len(filenames))

@@ -17,7 +17,7 @@ def get_config(args):
                 'clip_guidance_lambda', 'classifier_lambda',
                 'num_imgs', 'batch_size',
                 'seed',
-                'classifier_type', 'second_classifier_type', 'third_classifier_type', 'method']:
+                'classifier_type', 'second_classifier_type', 'third_classifier_type', 'method', 'image_dir']:
             if str(getattr(args, key)) != '-1':
                 print('setting key value', key, )
                 setattr(config, key, getattr(args, key))

@@ -1,0 +1,193 @@
+training:
+  batch_size: 128
+  n_epochs: 500000
+  n_iters: 300001
+  snapshot_freq: 5000
+  snapshot_sampling: false
+  snapshot_sampling_freq: 5000
+  anneal_power: 2
+  log_all_sigmas: false
+
+sampling:
+  batch_size: 100 # 25 for randomized smoothing, 100 otherwise
+  data_init: false # true for CLIP
+  data_init_correct_class: false
+  random_label_data_init: false # true for CLIP
+  model_failure_examples_init: true # false for CLIP
+  model_failure_examples_init_wrong_class: false
+  name_init: false
+  init_data_seed: 1234 # set it to the same seed (1234)! 1239 for CLIP
+  step_lr: 0.0000062
+  nsigma: 5
+  ckpt_id: 260000
+  final_only: false
+  fid: false
+  num_samples4fid: 10000
+  inpainting: false
+  interpolation: false
+  n_interpolations: 15
+  noise_first: true
+  save_freq: 1
+  consistent: false
+  conditional: true
+  model_description:
+    type: ['benchmark-Madry_l2_experimental']
+    folder: 'AdvACET_24-02-2020_14:41:39'
+    checkpoint: 'final'
+    temperature: null # 0.41
+    load_temp: false
+  line_search:
+    type: 'armijo' # 'wolfe_conditions'  # 'armijo' # 'wolfe_conditions' # wolfe_conditions, armijo_momentum_prox, armijo
+    beta_1: 0.0001
+    beta_2: 0.9999
+    alpha_lower_bound: 0.0001
+    alpha_current: 100.0 # 1000, change it to 100
+  inverse_mode:
+    noise: 'gaussian'
+    init_apgd_eps: 3.9
+    init_apgd_steps: 5
+    n_restarts: 5
+    activate: false
+    type: 'not_dynamic_penalty' # alma, not_dynamic_penalty
+    multiplier: 10000 # 1000, 10 not used in current, augmented Lagrangian setting - ToDo - delete?
+    inverse_mode_threshold_probs: 0.99974
+    norm: 'l2' # l2, l1, LPIPS, 1.5, FeatureDist
+    #  further hyper-parameters according to https://github.com/jeromerony/adversarial-library/blob/main/adv_lib/attacks/augmented_lagrangian_attacks/alma.py
+    penalty_multiplier_init: 1
+    lagrange_multiplier_init: 1
+    lr_init: 0.1 # 0.1
+    is_adv: null
+    penalty_multiplier: null
+    lagrange_multiplier: null
+    lr_reduction: 0.1
+    constr_improvement_rate: 0.95
+    prev_constraint: null
+    ema_weight: 0.999
+    penalty_param_increase: 10 #1.2
+    check_steps: 10
+    init_lr_distance: null # 0.1
+    # RMSProp-related constants
+    square_avg: null
+    # ToDo: what is a better initial value for RMSProp? 0 vs 1?
+    square_avg_init: 0 # 1
+    alpha: 0.99
+    eps: 1e-9 # 1e-8
+    # Adam-related constants
+    beta_1: 0.9
+    beta_2: 0.999
+  ratio_mode:
+    no_apgd: false
+    frank_wolfe:
+      decay: false
+      activate: false
+      constraint: 'intersection'
+      momentum: 0 # 0.9
+      backtracking_LS:
+        activate: false
+        L: null
+        eta: 0.9 # 0.9
+        tau: 2 # 2
+        gamma_max: 1
+        eps: 0.001
+    randomized_smoothing: False
+    randomized_smoothing_sigma: 0.25 # 0.25
+    activate: false
+    noise: false # gaussian, uniform, false
+    loss_diverse_iter: false # false, 20
+    eps_repeat_steps: 2 # 8
+    step_lr: 0.5 # 0.1
+    adaptive_stepsize: false
+    momentum: false
+    grad_normalization: 'l2' # false, l1, l2, l_inf
+    apgd:
+      pgd_mode: false
+      activate: true
+      n_restarts: 5
+      p_current: 0
+      p_next: 0.22
+      lr_current: 0.5 # 0.5, 0.9, 10
+      lr_next: 0.5 # 0.5, 0.9, 10
+      lr_next_for_plotting: 0.5 # 0.5, 0.9, 10
+      period_length_red: 0.03
+      min_length: 0.06
+      loss_values: [ ]
+      f_max_current: 0
+      f_max_next: 0
+      rho: 0.75
+      alpha: 0.75
+  use_generative_model: false
+  grad_scale: 10000
+  logits_max: false
+  use_noise: false
+  project: true
+  eps_projection: 1 # for generating misalignment for score networks, when misalignment == true
+  eps_begin: 12 # 25 for CLIP
+  eps_end: 12 # 25 for CLIP
+  experiment_name: 'logits_evolution' #'logits_evolution_FID_imagenet1000'
+  save_final_name: false # 'final-most_probable_ood_init_RATIO_232steps' #
+  start_with_final_name: false # 'final-most_probable_ood_init_RATIO_232steps', 'final_ood_init_RATIO_232steps'
+  norm_projection: 'l2' # 'LPIPS', 'l1', 'l2'
+  regularizer: false # false, 'LPIPS', 'l1', 'l2'
+  misalignment: false
+  calculade_FID_stats: false # true except for FID calculation set to true
+  calculade_FID_continue: false
+  calculate_FID_continue_path: ''
+
+fast_fid:
+  batch_size: 1000
+  num_samples: 1000
+  begin_ckpt: 5000
+  end_ckpt: 300000
+
+data:
+  dataset: "eyepacs"
+  dataset_for_scorenet: "eyepacs"
+  class_labels:  ['healthy', 'mild', 'moderate', 'severe', 'proliferative']
+  image_size: 224 # 224 for CLIP
+  image_plot_scaling: 2 # 4 for 232 num_channels, 64 for 3000
+  channels: 3
+  logit_transform: false
+  uniform_dequantization: false
+  gaussian_dequantization: false
+  random_flip: false
+  rescaled: false
+  num_workers: 4
+  tinyImages:
+    augm_type: 'none'
+    cutout_window: 16
+    out_size: 32
+    exclude_cifar: true
+    exclude_cifar10_1: true
+    offset: 0
+
+
+model:
+  sigma_begin: 1 # 50
+  num_classes: 2
+  ema: true
+  ema_rate: 0.9999
+  spec_norm: false
+  sigma_dist: geometric
+  sigma_end: 0.01
+  normalization: InstanceNorm++
+  nonlinearity: elu
+  ngf: 128
+  unet: true
+
+optim:
+  weight_decay: 0.000
+  optimizer: "Adam"
+  lr: 0.0001
+  beta1: 0.9
+  beta2: 0.999
+  amsgrad: false
+  eps: 0.00000001
+utils:
+  device_ids: [0]
+evaluation:
+  evaluation_type: 'all_samples_eval' # latex_benchmark, all_samples_eval
+  base_folder: 'ACSM/slurm_start_files/exp/logits_evolution/image_samples' #'ACSM/exp/logits_evolution_evaluate/image_samples_IN1000'
+  pattern_folder: 'Appendix_plots_*' #'BENCH*' #'FAILURE*apgd*' # # benchmark/ablation : BENCH*, apgd : FAILURE*
+  ids: [94] # benchmark/ablation : [37, 72, 94], apgd: [92]
+  #[9,37,51,61,66,72,80,85,94] # the best - [5, 11, 20, 56], random out of 100 - [32, 62, 67, 36]
+

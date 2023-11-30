@@ -8,19 +8,18 @@ l2_sim_lambda: 0
 l1_sim_lambda: 0
 range_lambda: 0
 
-deg_cone_projection: 0
+deg_cone_projection: 30
 
 clip_guidance_lambda: 0
 classifier_lambda: 0.1
 
-num_imgs: 12
-image_dir: 'samples'
-batch_size: 6
+image_dir: 'samples_oct'
+batch_size: 4
 
 seed: 1
 
-classifier_type: 3
-second_classifier_type: -1
+classifier_type: 1
+second_classifier_type: 0
 third_classifier_type: -1
 
 use_blended: false
@@ -32,9 +31,8 @@ model_output_size: 256
 
 enforce_same_norms: true
 
-diffusion_checkpoint: '256x256_diffusion_uncond'
+diffusion_checkpoint: 'ema_0.9999_270000_oct_v1'
 
-config_base: 'imagenet1000.yml'
-
+config_base: 'oct.yml'
 
 
