@@ -14,7 +14,7 @@ import math
 import numpy as np
 from tqdm import tqdm
 
-from utils_svces.FW import LMO
+from counterfactual_utils.FW import LMO
 from .other_utils import L0_norm, L1_norm, L2_norm
 
 norms_dict_torch = {'L1': 1,

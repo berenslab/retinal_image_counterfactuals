@@ -4,7 +4,7 @@ from torchvision import datasets
 from torch.utils.data import DataLoader
 
 from .paths import get_imagenet_o_path
-from utils_svces.datasets.augmentations.imagenet_augmentation import get_imageNet_augmentation
+from counterfactual_utils.datasets.augmentations.imagenet_augmentation import get_imageNet_augmentation
 
 DEFAULT_TRAIN_BATCHSIZE = 128
 DEFAULT_TEST_BATCHSIZE = 128

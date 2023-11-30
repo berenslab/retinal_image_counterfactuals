@@ -5,7 +5,7 @@ from torchvision.datasets import ImageFolder
 import numpy as np
 
 from .paths import get_openimages_path
-from utils_svces.datasets.augmentations.imagenet_augmentation import get_imageNet_augmentation
+from counterfactual_utils.datasets.augmentations.imagenet_augmentation import get_imageNet_augmentation
 import os
 
 DEFAULT_TRAIN_BATCHSIZE = 128

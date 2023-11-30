@@ -5,10 +5,10 @@ from torchvision.utils import save_image
 from blended_diffusion.optimization import DiffusionAttack
 from blended_diffusion.optimization.arguments import get_arguments
 from configs import get_config
-from utils_svces.datasets.paths import get_imagenet_path
-from utils_svces.datasets.imagenet import get_imagenet_labels
-import utils_svces.datasets as dl
-from utils_svces.functions import blockPrint
+from counterfactual_utils.datasets.paths import get_imagenet_path
+from counterfactual_utils.datasets.imagenet import get_imagenet_labels
+import counterfactual_utils.datasets as dl
+from counterfactual_utils.functions import blockPrint
 import torch
 import torch.nn as nn
 import numpy as np
@@ -19,17 +19,17 @@ import seaborn as sns
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
-from utils_svces.load_trained_model import load_model
+from counterfactual_utils.load_trained_model import load_model
 from tqdm import trange
 from torchvision.transforms import functional as TF
 import cv2
 from PIL import Image
 from time import sleep
-from utils_svces.datasets.oct import get_oct
-from utils_svces.train_types.helpers import create_attack_config, get_adversarial_attack
+from counterfactual_utils.datasets.oct import get_oct
+from counterfactual_utils.train_types.helpers import create_attack_config, get_adversarial_attack
 from matplotlib.colors import LinearSegmentedColormap
 
-from utils_svces.Evaluator import Evaluator
+from counterfactual_utils.Evaluator import Evaluator
 
 
 hps = get_config(get_arguments())

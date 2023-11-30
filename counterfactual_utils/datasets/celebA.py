@@ -2,7 +2,7 @@ import torch
 import torch.distributions
 from torchvision import datasets, transforms
 from .paths import get_celebA_path, get_imagenet_path
-from utils_svces.datasets.augmentations.cutout import Cutout
+from counterfactual_utils.datasets.augmentations.cutout import Cutout
 
 def get_celebA_augmentation(type='default', out_size=224, config_dict=None):
     celebA_mean = torch.tensor([0.5063, 0.4258, 0.3832])

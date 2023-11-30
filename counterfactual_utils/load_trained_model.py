@@ -1,20 +1,20 @@
 import torch
 import os
 
-from utils_svces.models.models_32x32.resnet import ResNet18, ResNet34, ResNet50
-from utils_svces.models.models_32x32.wideresnet_carmon import WideResNet as WideResNetCarmon
-from utils_svces.models.model_factory_32 import build_model as build_model32
-from utils_svces.models.model_factory_224 import build_model as build_model224
+from counterfactual_utils.models.models_32x32.resnet import ResNet18, ResNet34, ResNet50
+from counterfactual_utils.models.models_32x32.wideresnet_carmon import WideResNet as WideResNetCarmon
+from counterfactual_utils.models.model_factory_32 import build_model as build_model32
+from counterfactual_utils.models.model_factory_224 import build_model as build_model224
 from torchvision import models
 import torch.nn as nn
 from torchvision import models as torch_models
 
-from utils_svces.model_normalization import Cifar10Wrapper, Cifar100Wrapper, SVHNWrapper,\
+from counterfactual_utils.model_normalization import Cifar10Wrapper, Cifar100Wrapper, SVHNWrapper,\
     ImageNetWrapper, RestrictedImageNetWrapper, BigTransferWrapper
-from utils_svces.temperature_wrapper import TemperatureWrapper
-import utils_svces.models.ebm_wrn as wrn
-from utils_svces.models.big_transfer_factory import build_model_big_transfer
-from utils_svces.datasets.paths import get_CIFAR10_path, get_imagenet_path
+from counterfactual_utils.temperature_wrapper import TemperatureWrapper
+import counterfactual_utils.models.ebm_wrn as wrn
+from counterfactual_utils.models.big_transfer_factory import build_model_big_transfer
+from counterfactual_utils.datasets.paths import get_CIFAR10_path, get_imagenet_path
 
 
 def load_non_native_model(type, folder, device):

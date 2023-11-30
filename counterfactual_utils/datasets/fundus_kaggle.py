@@ -374,7 +374,7 @@ def get_EyePacs(split='train', batch_size=16, shuffle=None, size=224, num_worker
 	data_dir = get_EyePacs_path()
 
 	# ToDO: move to the dataset dir
-	csv_dir = os.path.join(get_base_dir_ARAM(), 'utils_svces', 'datasets')
+	csv_dir = os.path.join(get_base_dir_ARAM(), 'counterfactual_utils', 'datasets')
 
 	if split in ['train', 'test', 'val']:
 		csv_file = f'qual_eval_{split}.csv'

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-import utils_svces.distances as d
+import counterfactual_utils.distances as d
 
 from .out_distribution_training import OutDistributionTraining
 from .train_loss import acet_uniform_obj_from_name, acet_target_obj_from_name, MinMaxLoss, TrainLoss

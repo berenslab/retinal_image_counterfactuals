@@ -1,6 +1,6 @@
 from torchvision import transforms
 import torch
-from utils_svces.datasets.autoaugment import ImageNetPolicy
+from counterfactual_utils.datasets.autoaugment import ImageNetPolicy
 
 # lighting transform
 # https://git.io/fhBOc

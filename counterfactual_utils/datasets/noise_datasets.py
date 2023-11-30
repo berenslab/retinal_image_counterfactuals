@@ -3,7 +3,7 @@ import torch.distributions
 from torchvision import transforms
 import numpy as np
 from torch.utils.data import Dataset
-from utils_svces.datasets.augmentations.cifar_augmentation import get_cifar10_augmentation
+from counterfactual_utils.datasets.augmentations.cifar_augmentation import get_cifar10_augmentation
 
 DEFAULT_TRAIN_BATCHSIZE = 128
 DEFAULT_TEST_BATCHSIZE = 128

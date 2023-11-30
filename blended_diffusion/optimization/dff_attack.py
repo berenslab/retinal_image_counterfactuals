@@ -45,8 +45,8 @@ import matplotlib.pyplot as plt
 from blended_diffusion.utils_blended.visualization import show_tensor_image, show_editied_masked_image
 
 
-from utils_svces.get_config import get_config
-from utils_svces.Evaluator import Evaluator
+from counterfactual_utils.get_config import get_config
+from counterfactual_utils.Evaluator import Evaluator
 
 
 class EmptyWriter:

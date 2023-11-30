@@ -5,7 +5,7 @@ from torchvision import transforms
 import numpy as np
 import os
 
-from utils_svces.datasets.augmentations.cifar_augmentation import get_cifar10_augmentation
+from counterfactual_utils.datasets.augmentations.cifar_augmentation import get_cifar10_augmentation
 from .paths import get_tiny_images_files
 
 DEFAULT_TRAIN_BATCHSIZE = 128

@@ -12,10 +12,10 @@ try:
 except Exception as err:
     print(str(err))
 from torchvision.models import resnet50 as resnet50_in1000
-from utils_svces.model_normalization import Cifar10Wrapper, ImageNetWrapper
-from utils_svces.run_file_helpers import factory_dict
-from utils_svces.run_file_helpers import models_dict as models_wrappers_dict
-from utils_svces.datasets.fundus_kaggle import get_EyePacs, get_FundusKaggle
+from counterfactual_utils.model_normalization import Cifar10Wrapper, ImageNetWrapper
+from counterfactual_utils.run_file_helpers import factory_dict
+from counterfactual_utils.run_file_helpers import models_dict as models_wrappers_dict
+from counterfactual_utils.datasets.fundus_kaggle import get_EyePacs, get_FundusKaggle
 from models.Anon1s_smaller_radius_net import PreActResNet18 as PreActResNet18_Anon1
 from models.BiTM import KNOWN_MODELS as BiT_KNOWN_MODELS
 from models.SAMNets import WideResNet
@@ -40,11 +40,11 @@ from PIL import Image
 from collections import OrderedDict
 from torchvision import transforms
 from perceptual_advex.utilities import get_dataset_model
-import utils_svces.datasets as dl
-from utils_svces.datasets.oct import get_oct
+import counterfactual_utils.datasets as dl
+from counterfactual_utils.datasets.oct import get_oct
 from torch.autograd import Variable
 
-from utils_svces.models.load_models_bethge_texture import load_model as load_model_bethge_texture
+from counterfactual_utils.models.load_models_bethge_texture import load_model as load_model_bethge_texture
 import os, sys
 import shutil
 import requests
@@ -53,6 +53,7 @@ import io
 import bagnets.pytorchnet
 
 import numpy as np
+import torch
 
 __all__ = ['rm_substr_from_state_dict', 'Gowal2020UncoveringNet_load', 'PAT_load', 'RLAT_load', 'models_dict',
            'descr_args_generate', 'descr_args_rst_stab',
@@ -101,326 +102,31 @@ def loader_all(use_wrapper, device, model, kwargs, device_ids=None, prewrapper=N
 
 Evaluator_FID_base_path = 'ACSM/exp/logits_evolution_FID/image_samples'
 
-Evaluator_model_names_cifar10 = ['benchmark-Gowal2020Uncovering_extra-L2',
-                                 # 0, 200 |FID: 12.214471610707733, 80MTiny - FID:  73.48584942960701 (FID: 52.2703979513268)
-                                 'BiT-M-R50x1_CIFAR10_nonrobust',
-                                 # 1, 800 |FID: 31.798684438118755, 80MTiny - FID:  80.9394749163722 (FID:  76.00931802811118)
-                                 'benchmark-Augustin2020Adversarial-L2',
-                                 # 'ResNet50', #                               2, 800 |FID: 7.682910516684672, 80MTiny -FID:  39.37918229989168(FID:  25.409702995609962), prior(CIFAR-10) - FID: 13.00980479007643, 80MTiny-prior - FID:  25.361933893836976
-                                 'ResNet50_nonrobust',
-                                 # 3 |FID: 25.33756795783256, 80MTiny - FID:  82.75083332097341(FID:  68.20513836145074)
-                                 'rst_stab',
-                                 # 4, 200 |FID:  5.037825277251386, 80MTiny - FID:  73.23352025516061(FID:  50.508438071267506)
-                                 'benchmark-Gowal2020Uncovering-L2',
-                                 # 5 |FID:  8.239073025157722, 80MTiny - FID:  68.03733490306246
-                                 'benchmark-Gowal2020Uncovering_improved',
-                                 # 6, 200 |FID: 8.559810109140585, 80MTiny - FID:  56.911254301278234
-                                 'benchmark-Wu2020Adversarial-L2',
-                                 # 7 |FID:  7.963537459704412, 80MTiny - FID:  67.38042324168163 (FID:  47.36846537530215), prior(CIFAR-10) - FID: 10.154340519585276
-                                 'benchmark-PAT_improved',
-                                 # 8, 800 |FID:  9.070679516064502, 80MTiny - FID:  61.79206184439818 (FID:  45.75354326455374), 80MTiny-prior - FID:  45.465010488718406
-                                 'benchmark-RLAT_improved',  # 9 |
-                                 'benchmark-0.02l2:Anon1_small_radius_experimental',  # 10, 800
-                                 'benchmark-0.1l2:Anon1_small_radius_experimental',  # 11, 800
-                                 'benchmark-0.25l2:Anon1_small_radius_experimental',  # 12, 800
-                                 'WideResNet34x10_feature_model',  # 13
-                                 'ViT-B_16_CIFAR10_nonrobust',  # 14
-                                 'benchmark-Hendrycks2020AugMix_ResNeXt-corruptions',  # 15, 800
-                                 'benchmark-0.5l2:Anon1_small_radius_experimental',  # 16, 800
-                                 'benchmark-12l1:Anon1_small_radius_experimental',  # 17, 800
-                                 'benchmark-8,255linf:Anon1_small_radius_experimental',  # 18, 800
-                                 'benchmark-1l2:Anon1_small_radius_experimental',  # 19, 800
-                                 'benchmark-0.75l2:Anon1_small_radius_experimental',  # 20, 800
-                                 'benchmark-Augustin2020Adversarial_34_10_extra-L2',  # 21, 1000
-                                 'benchmark-SAM_experimental',  # 22, 200
-                                 'benchmark-Gowal2020Uncovering_improved-L1.5',  # 23
-                                 'benchmark-Augustin2020Adversarial_34_10_extra_improved-L1.5',  # 24
-                                 'benchmark-0.5l1.5:Anon1_small_radius_experimental',  # 25, 800
-                                 'benchmark-1l1.5:Anon1_small_radius_experimental',  # 26, 800
-                                 'benchmark-1.5l1.5:Anon1_small_radius_experimental',  # 27, 800
-                                 'benchmark-2l1.5:Anon1_small_radius_experimental',  # 28, 800
-                                 'benchmark-2.5l1.5:Anon1_small_radius_experimental',  # 29, 800
-                                 'benchmark-Max:experimental,ResNet18,Adversarial_Training_25-01-2022_23:15:00',
-                                 # 30, AT on poisoned data, with cat class having watermark
-                                 'benchmark-Max:experimental,ResNet18,Adversarial Training_26-01-2022_19:40:26',
-                                 # 31, AT on poisoned data, with plane class having watermark, cvx param is 0.6
-                                 'benchmark-Max:experimental,ResNet18,Adversarial Training_26-01-2022_23:21:12',
-                                 # 32, AT on poisoned data(no poisoning, wrong), with plane class having watermark and 20% poisoned, cvx param is 0.6
-                                 'benchmark-Max:experimental,ResNet18,Adversarial Training_27-01-2022_08:47:53',
-                                 # 33, AT on poisoned data, with plane class having watermark (20% poisoned), cvx param is 0.3
-                                 'benchmark-Max:experimental,ResNet18,Adversarial Training_27-01-2022_08:49:03',
-                                 # 34, AT on poisoned data, with plane class having watermark (30% poisoned), cvx param is 0.3
-                                 'benchmark-Max:experimental,ResNet18,Adversarial Training_28-01-2022_18:15:37',
-                                 # 35, AT on poisoned data, with plane class having watermark (10% poisoned), cvx param is 0.1
-                                 'benchmark-Max:experimental,ResNet18,Adversarial Training_28-01-2022_18:20:24',
-                                 # 36, AT on poisoned data, with plane class having diagonals mod3 01 (20% poisoned), cvx param is 0.3
-                                 'benchmark-Max:experimental,ResNet18,Adversarial Training_28-01-2022_18:34:09',
-                                 # 37, AT on poisoned data, with plane class having text from watermark (20% poisoned), cvx param is 0.4
-                                 'benchmark-Max:experimental,ResNet18,Adversarial Training_30-01-2022_01:37:52',
-                                 # 38, AT on poisoned data, with plane class having watermark (30% poisoned), cvx param is 0.1
-                                 'benchmark-Max:experimental,ResNet18,Adversarial Training_30-01-2022_14:59:08',
-                                 # 39, AT on poisoned data, with plane class having watermark (30% poisoned), cvx param is 0.15
-                                 'benchmark-Max:experimental,ResNet18,Adversarial Training_30-01-2022_15:01:11',
-                                 # 40, AT on poisoned data, with plane class having watermark (30% poisoned), cvx param is 0.2
-                                 'benchmark-Max:experimental,ResNet18,Adversarial Training_31-01-2022_20:09:21',
-                                 # 41, AT on poisoned data, with bird class having watermark (30% poisoned), cvx param is 0.15 (before 0.1)
-                                 'benchmark-Max:experimental,ResNet18,Adversarial Training_01-02-2022_01:01:32']  # 42, AT on poisoned data, with bird class having watermark (30% poisoned), cvx param is 0.11
+Evaluator_model_names_eyepacs = [f'benchmark-Max:experimental,rmtIN1000:ResNet50,plain_17-01-2023_16:22:33',  #0: binary, plain, bs=128
+                                 f'benchmark-MadryRobust:l2:experimental,MadryRobust:l2,TRADES_02-06-2023_12:10:59', #1: binary, eps=0.01, MadryRobust
+                                 f'benchmark-Max:experimental,rmtIN1000:ResNet50,plain_24-01-2023_20:42:28',  #2: 5-class, plain, mse+ce, bs=8
+                                 f'benchmark-MadryRobust:l2:experimental,MadryRobust:l2,TRADES_17-02-2023_18:30:38',  #3: 5-class, eps 0.01, MadryRobust
+                                ]
 
-Evaluator_model_names_imagenet1000 = [
-    'benchmark-Madry_l2_experimental',  # 0 | FID
-    'benchmark-Madry_linf_experimental',  # 1 | FID
-    'benchmark-Madry_l2_improved_ep_1',  # 2 | FID
-    'benchmark-Madry_l2_improved_ep_3',  # 3 | FID
-    'benchmark-Madry_l2_improved_eps_1',  # 4 | FID
-    'benchmark-Madry_linf_improved_ep_1',  # 5 | FID
-    'ResNet50IN1000_nonrobust',  # 6
-    'benchmark-Madry_l2_improved_ep_1l1',  # 7, by this l1 fine-tuning is meant of the l2 robust model
-    'benchmark-MicrosoftResNet50,experimental,l2,eps,0.25',  # 8
-    'benchmark-MicrosoftResNet50,experimental,l2,eps,0.5',  # 9
-    'benchmark-MicrosoftResNet50,experimental,l2,eps,1',  # 10
-    'benchmark-MicrosoftResNet50,experimental,l2,eps,3',  # 11
-    'benchmark-MicrosoftResNet50,experimental,l2,eps,5',  # 12
-    'benchmark-MicrosoftWide_ResNet50_4,experimental,l2,eps,0.25',  # 13
-    'benchmark-MicrosoftWide_ResNet50_4,experimental,l2,eps,0.5',  # 14
-    'benchmark-MicrosoftWide_ResNet50_4,experimental,l2,eps,1',  # 15
-    'benchmark-MicrosoftWide_ResNet50_4,experimental,l2,eps,3',  # 16
-    'benchmark-MicrosoftWide_ResNet50_4,experimental,l2,eps,5',  # 17
-    'benchmark-Madry_l2_improved_ep_1l1.5',  # 18
-    'timm,tf_efficientnet_b7_ap,nonrobust',  # 19
-    'timm,tf_efficientnet_b7_ns,nonrobust',  # 20
-    'timm,swin_large_patch4_window12_384,nonrobust',  # 21
-    'timm,tf_efficientnet_b7,nonrobust',  # 22
-    'benchmark-DeiTrobust_experimental',  # 23
-    'benchmark-xcit_small_12_p16_224,xcit_s12_eps_4',  # 24
-    'benchmark-xcit_small_12_p16_224,xcit_s12_eps_8',  # 25
-    'timm,vit_base_patch32_224,nonrobust',  # 26
-    'timm,resnet50,nonrobust',  # 27
-    'timm,beit_large_patch16_224,nonrobust', # 28
-    'timm,convnext_xlarge_in22ft1k,nonrobust', # 29
-    'timm,swin_large_patch4_window7_224,nonrobust', #30
-    'timm,convnext_large_in22ft1k,nonrobust', #31
-    'bethge-texture,resnet50_trained_on_SIN,nonrobust', #32
-    'bethge-texture,resnet50_trained_on_SIN_and_IN,nonrobust', #33
-    'bethge-texture,resnet50_trained_on_SIN_and_IN_then_finetuned_on_IN,nonrobust', # 34
-    'bagnet,bagnet17,nonrobust'] #35
+Evaluator_model_names_oct = [f'benchmark-Max:experimental,ResNet50,plain_29-11-2022_21:53:46', #0: plain, 4-class, scratch
+                             f'benchmark-Max:experimental,ResNet50,TRADES_02-12-2022_15:53:20', #1: TRADES, 4-class, scratch
+                             ]
 
-# 'BiT-M-R50x1IN1000_nonrobust']       #     6
-
-Evaluator_model_names_funduskaggle = ['benchmark-Max:experimental,ResNet50,TRADES_04-04-2021_07:56:59',  # 0
-                                      'benchmark-Anon1:finetuning_experimental,Wide_ResNet50_4,model_2021-09-23SPACE13:40:42.945427',
-                                      # 1
-                                      'benchmark-Anon1:finetuning_experimental,Max=ResNet50,model_2021-09-29SPACE13:06:22.590333',
-                                      # 2
-                                      'benchmark-Anon1:finetuning_experimental,Wide_ResNet50_4,model_2021-09-28SPACE19:52:12.481420',
-                                      # 3
-                                      'benchmark-Max:experimental,ResNet50,TRADES_24-10-2021_22:55:07',  # 4
-                                      'benchmark-Max:experimental,ResNet50,TRADES_02-11-2021_13:55:10',  # 5
-                                      'benchmark-Max:experimental,ResNet50,TRADES_06-11-2021_15:39:13',  # 6
-                                      'benchmark-Max:experimental,ResNet50,TRADES_01-10-2021_22:28:29',  # 7
-                                      'benchmark-Max:experimental,ResNet50,plain_02-04-2021_08:15:08',  # 8
-                                      'benchmark-Max:experimental,ResNet50,TRADES_27-12-2021_17:20:51',  # 9
-                                      'benchmark-Max:experimental,ResNet50,TRADES_29-12-2021_12:37:57',  # 10
-                                      'benchmark-Max:experimental,ResNet50,TRADES_29-12-2021_12:39:24',  # 11
-
-                                      'benchmark-Max:experimental,ResNet50,TRADES_10-01-2022_15:40:23',
-                                      # 12 - clahe new eval, onset1
-                                      'benchmark-Max:experimental,ResNet50,TRADES_10-01-2022_15:48:30',
-                                      # 13 - clahe new eval, onset2, eps=0.25
-                                      'benchmark-Max:experimental,ResNet50,TRADES_14-01-2022_13:01:06',
-                                      # 14 - raw new_qual_eval_artifacts_green_circles_blue_squares
-                                      'benchmark-Max:experimental,ResNet50,TRADES_28-01-2022_13:45:42',
-                                      # 15 - clahe, onset2, eps=0.1
-                                      'benchmark-Max:experimental,ResNet50,plain_10-01-2022_00:10:30',
-                                      # 16 - clahe, onset2, plain
-                                      'benchmark-Max:experimental,ResNet50,TRADES_10-01-2022_15:48:30_ft=0.0001;at=10;ep=3',
-                                      # 17 - clahe, onset2, eps=0.25, ft
-
-                                      'benchmark-Max:experimental,ResNet50,TRADES_15-02-2022_15:23:54',
-                                      # 18 - finetuning plain, trades, 0.75, l2 eps = 0.25, 10 iter, step-lr
-                                      'benchmark-Max:experimental,ResNet50,TRADES_15-02-2022_15:40:34',
-                                      # 19 - finetuning plain, trades, 0.75, l2 eps = 0.25, 10 iter, cyclic-lr 1/3
-                                      'benchmark-Max:experimental,ResNet50,Adversarial Training_15-02-2022_15:49:52',
-                                      # 20 - finetuning plain, AT, l2 eps = 0.1, 10 iter
-                                      'benchmark-Max:experimental,ResNet50,Adversarial Training_15-02-2022_15:49:50',
-                                      # 21 - finetuning plain, AT, l2 eps = 0.05, 10 iter
-                                      'benchmark-Max:experimental,ResNet50,plain_10-02-2022_23:28:12',
-                                      # 22 - plain, murat, 0 vs 234
-
-                                      'benchmark-Max:experimental,ResNet50,model_2022-02-17 09:42:51.341751 funduskaggle lr=0.00100 piecewise-ft ep=1 attack=apgd fts=Max seed=0 at=L2 eps=0.05 iter=10',
-                                      # 23 - Fr finetuned, 0.05
-                                      'benchmark-Max:experimental,ResNet50,model_2022-02-17 09:42:51.359303 funduskaggle lr=0.00100 piecewise-ft ep=1 attack=apgd fts=Max seed=0 at=L2 eps=0.1 iter=10',
-                                      # 24 - Fr finetuned, 0.1
-                                      'benchmark-Max:experimental,ResNet50,model_2022-02-17 09:42:51.401997 funduskaggle lr=0.00100 piecewise-ft ep=1 attack=apgd fts=Max seed=0 at=L2 eps=0.15 iter=10',
-                                      # 25 - Fr finetuned, 0.15
-                                      'benchmark-Max:experimental,ResNet50,model_2022-02-17 12:02:46.233084 funduskaggle lr=0.00100 superconverge ep=3 attack=apgd fts=Max seed=0 at=L2 eps=0.01 iter=10',
-                                      # 26 - Fr finetuned, 0.01, 3 ep
-
-                                      'benchmark-Max:experimental,ResNet50,TRADES_11-02-2022_02:14:24',
-                                      # 27 - 0.25 TRADES 6, on 0 vs 234, 20 steps
-                                      'benchmark-Max:experimental,ResNet50,TRADES_11-02-2022_02:14:59',
-                                      # 28 - 0.1 TRADES 6, on 0 vs 234, 20 steps
-                                      'benchmark-Max:experimental,ResNet50,model_2022-02-17 19:20:10.720997 funduskaggle lr=0.00100 superconverge_small ep=3 attack=None fts=Max seed=0 at=L2 eps=0.01 iter=10',
-                                      # 29 - plain finetuning
-                                      'benchmark-Max:experimental,ResNet50,TRADES_11-02-2022_09:29:53']  # 30 - 0.5 TRADES 6, on 0 vs 234, 20 steps
-
-Evaluator_model_names_eyepacs = [f'benchmark-Max:experimental,rmtIN1000:ResNet50,TRADES_17-01-2023_15:41:49',  #0
-                                 f'benchmark-MadryRobust:l2:experimental,MadryRobust:l2,TRADES_14-02-2023_02:04:46',  #1
-                                 f'benchmark-MadryRobust:l2:experimental,MadryRobust:l2,TRADES_14-02-2023_15:59:51',  #2
-                                 f'benchmark-MadryRobust:l2:experimental,MadryRobust:l2,TRADES_14-02-2023_15:59:52',  #3
-                                 f'benchmark-MadryRobust:l2:experimental,MadryRobust:l2,TRADES_17-02-2023_16:53:36',  #4
-                                 f'benchmark-MadryRobust:l2:experimental,MadryRobust:l2,TRADES_17-02-2023_18:30:37',  #5 5-class, eps 0.02, MadryRobust
-                                 f'benchmark-MadryRobust:l2:experimental,MadryRobust:l2,TRADES_17-02-2023_18:30:38',  #6 5-class, eps 0.01, MadryRobust
-                                 f'benchmark-Max:experimental,rmtIN1000:ResNet50,TRADES_14-02-2023_01:56:31',  #7 - binary, eps 0.1, ImgNet
-                                 f'benchmark-Max:experimental,rmtIN1000:ResNet50,TRADES_14-02-2023_01:56:32',  #8 - binary, eps 0.05, ImgNet
-                                 f'benchmark-Max:experimental,rmtIN1000:ResNet50,plain_17-01-2023_16:22:33',  #9 - binary, plain, bs=128
-                                 f'benchmark-MadryRobust:l2:experimental,MadryRobust:l2,TRADES_02-06-2023_12:10:59', # 10 - binary, eps=0.01, MadryRobust
-                                 # f'benchmark-Max:experimental,rmtIN1000:ResNet50,plain_17-01-2023_16:23:08',  # - binary, plain, bs=8
-                                 f'benchmark-Max:experimental,rmtIN1000:ResNet50,plain_23-05-2023_10:47:32',  #11 - binary, plain, bs=128, drop class 1
-                                 f'benchmark-MadryRobust:l2:experimental,MadryRobust:l2,TRADES_23-05-2023_10:47:27',  #12 - binary, eps 0.01, MadryRobust, drop class 1
-                                 f'benchmark-MadryRobust:l2:experimental,MadryRobust:l2,TRADES_23-05-2023_10:47:26',  #13 - binary, eps 0.05, MadryRobust, drop class 1
-                                 f'benchmark-MadryRobust:l2:experimental,MadryRobust:l2,TRADES_23-05-2023_10:47:28',  #14 - binary, eps 0.1, MadryRobust, drop class 1
-                                 f'benchmark-Max:experimental,rmtIN1000:ResNet50,plain_24-01-2023_20:42:28',  #15 - 5-class, plain, mse+ce, bs=8
-                                 f'benchmark-Max:experimental,rmtIN1000:ResNet50,plain_08-02-2023_16:39:54', #16 - 5 class, plain, ce, bs=16
-                                 ]
-
-Evaluator_model_names_oct = ['benchmark-Max:experimental,rmtIN1000:ResNet50,TRADES_02-05-2022_17:17:01',
-                             # 0 - 0.25 eps model, wrong wrapper
-                             'benchmark-Max:experimental,rmtIN1000:ResNet50,TRADES_04-05-2022_18:20:29',
-                             # 1 - TRADES_03-05-2022_16:04:56'] # 0.5 eps, 1 channel
-                             'benchmark-Max:experimental,rmtIN1000:ResNet50,TRADES_07-05-2022_01:15:49']  # 2 - 1.0 eps
-
-Evaluator_model_names_oct += [f'benchmark-Max:experimental,ResNet50,TRADES_02-12-2022_15:53:2{i}' for i in [0, 2]]
-Evaluator_model_names_oct += [f'benchmark-Max:experimental,ResNet50,plain_29-11-2022_21:53:46']
-
-Evaluator_model_names_dict = {'cifar10': Evaluator_model_names_cifar10,
-                              'imagenet1000': Evaluator_model_names_imagenet1000,
-                              'tinyimages': Evaluator_model_names_cifar10,
-                              'oa-imagenet': Evaluator_model_names_imagenet1000,
-                              'funduskaggle': Evaluator_model_names_funduskaggle,
-                              'eyepacs': Evaluator_model_names_eyepacs,
+Evaluator_model_names_dict = {'eyepacs': Evaluator_model_names_eyepacs,
                               'oct': Evaluator_model_names_oct}
 
 IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tiff', '.webp')
 
-
 #####
-import torch
 
-model_type_to_folder = {
-    # CIFAR10
-    'tresnetm': 'TResNet-M',
-    'resnet50': 'ResNet50',
-    'gowal2020uncovering_extra-l2': 'Gowal2020Uncovering_extra',
-    'gowal2020uncovering-l2': 'Gowal2020Uncovering',
-    'wu2020adversarial-l2': 'Wu2020Adversarial',
-    'rst_stab': 'RST_stab',
-    'resnet50_nonrobust': 'ResNet50_nonrobust',
-    'gowal2020uncovering_improved': 'Gowal2020Uncovering_improved',
-    'pat_improved': 'PAT',
-    'rlat_improved': 'RLAT',
-    'bit-m-r50x1_cifar10_nonrobust': 'BiT-M-R50x1_CIFAR10_nonrobust',
-    'vit-b/32_clip_nonrobust': 'ViT-B/32_CLIP_nonrobust',
-    '0.25l2:Anon1_small_radius_experimental': '0.25:Anon1SmallRadiusExperimental',
-    '0.1l2:Anon1_small_radius_experimental': '0.1:Anon1SmallRadiusExperimental',
-    '0.02l2:Anon1_small_radius_experimental': '0.02:Anon1SmallRadiusExperimental',
-    '0.5l2:Anon1_small_radius_experimental': '0.5:Anon1SmallRadiusExperimental',
-    '0.75l2:Anon1_small_radius_experimental': '0.75:Anon1SmallRadiusExperimental',
-    '0.5l1.5:Anon1_small_radius_experimental': '0.5l1.5:Anon1SmallRadiusExperimental',
-    '1l1.5:Anon1_small_radius_experimental': '1l1.5:Anon1SmallRadiusExperimental',
-    '1.5l1.5:Anon1_small_radius_experimental': '1.5l1.5:Anon1SmallRadiusExperimental',
-    '2l1.5:Anon1_small_radius_experimental': '2l1.5:Anon1SmallRadiusExperimental',
-    '2.5l1.5:Anon1_small_radius_experimental': '2.5l1.5:Anon1SmallRadiusExperimental',
-    '1l2:Anon1_small_radius_experimental': '1:Anon1SmallRadiusExperimental',
-    '12l1:Anon1_small_radius_experimental': '12l1:Anon1SmallRadiusExperimental',
-    '8,255linf:Anon1_small_radius_experimental': '8_255linf:Anon1SmallRadiusExperimental',
-    'augustin2020adversarial_34_10_extra-l2': 'Augustin2020Adversarial_34_10_extra',
-    'sam_experimental': 'SAM_experimental',
-    'augustin2020adversarial-l2': 'ResNet50',
-    'gowal2020uncovering_improved-l1.5': 'Gowal2020Uncovering_improved-L1.5',
-    'augustin2020adversarial_34_10_extra_improved-l1.5': 'Augustin2020Adversarial_34_10_extra_improved-L1.5',
-    'max:experimental,resnet18,adversarial_training_25-01-2022_23:15:00': 'Max:experimental,ResNet18,Adversarial_Training_25-01-2022_23:15:00',
-    'max:experimental,resnet18,adversarial training_26-01-2022_19:40:26': 'Max:experimental,ResNet18,Adversarial Training_26-01-2022_19:40:26',
-    'max:experimental,resnet18,adversarial training_26-01-2022_23:21:12': 'Max:experimental,ResNet18,Adversarial Training_26-01-2022_23:21:12',
-    'max:experimental,resnet18,adversarial training_27-01-2022_08:47:53': 'benchmark-Max:experimental,ResNet18,Adversarial Training_27-01-2022_08:47:53',
-    'max:experimental,resnet18,adversarial training_27-01-2022_08:49:03': 'benchmark-Max:experimental,ResNet18,Adversarial Training_27-01-2022_08:49:03',
+model_type_to_folder = {'resnet50': 'ResNet50',
+                        'rmtin1000': 'rmtIN1000',
+                        'madryrobust': 'MadryRobust'}
 
-    'max:experimental,resnet18,adversarial training_28-01-2022_18:15:37': 'Max:experimental,ResNet18,Adversarial Training_28-01-2022_18:15:37',
-    # 35, AT on poisoned data, with plane class having watermark (10% poisoned), cvx param is 0.1
-    'max:experimental,resnet18,adversarial training_28-01-2022_18:20:24': 'Max:experimental,ResNet18,Adversarial Training_28-01-2022_18:20:24',
-    # 36, AT on poisoned data, with plane class having diagonals mod3 01 (20% poisoned), cvx param is 0.3
-    'max:experimental,resnet18,adversarial training_28-01-2022_18:34:09': 'Max:experimental,ResNet18,Adversarial Training_28-01-2022_18:34:09',
 
-    'max:experimental,resnet18,adversarial training_30-01-2022_01:37:52': 'benchmark-Max:experimental,ResNet18,Adversarial Training_30-01-2022_01:37:52',
-
-    'max:experimental,resnet18,adversarial training_30-01-2022_14:59:08': 'Max:experimental,ResNet18,Adversarial Training_30-01-2022_14:59:08',
-    # 39, AT on poisoned data, with plane class having watermark (30% poisoned), cvx param is 0.15
-    'max:experimental,resnet18,adversarial training_30-01-2022_15:01:11': 'Max:experimental,ResNet18,Adversarial Training_30-01-2022_15:01:11',
-    # 40, AT on poisoned data, with plane class having watermark (30% poisoned), cvx param is 0.2
-    'max:experimental,resnet18,adversarial training_31-01-2022_20:09:21': 'Max:experimental,ResNet18,Adversarial Training_31-01-2022_20:09:21',
-    'max:experimental,resnet18,adversarial training_01-02-2022_01:01:32': 'Max:experimental,ResNet18,Adversarial Training_01-02-2022_01:01:32',
-    # IN-1k
-    'deitrobust_experimental': 'DeiTrobust',
-    'madry_l2_improved_ep_1l1.5': 'Madry_l2_improved_ep_1l1.5',
-    'madry_linf_experimental': 'Madry_linf_experimental',
-    'madry_l2_improved_ep_3': 'Madry_l2_improved_ep_3',  # 2.5 benchmark done
-    'madry_linf_improved_ep_1': 'Madry_linf_improved_ep_1',  # 2.5 benchmark done
-    'madry_l2_experimental': 'Madry_l2_experimental',
-    'madry_l2_improved_eps_1': 'Madry_l2_improved_eps_1',  # 2.5 benchmark done wrongly - redo
-    'madry_l2_improved_ep_1': 'Madry_l2_improved_ep_1',  # 2.5 benchmark done
-    'madry_l2_improved_ep_1l1': 'Madry_l2_improved_ep_1l1',
-    'bit-m-r50x1in1000_nonrobust': 'BiT-M-R50x1IN1000_nonrobust',
-    'resnet50in1000_nonrobust': 'ResNet50IN1000_nonrobust',
-    'wideresnet34x10_feature_model': 'WideResNet34x10',
-    'vit-b_16_cifar10_nonrobust': 'ViT-B_16_CIFAR10_nonrobust',
-    'hendrycks2020augmix_resnext-corruptions': 'Hendrycks2020AugMix_ResNeXt-corruptions',
-    'microsoftresnet50,experimental,l2,eps,0.25': 'MicrosoftResNet50,experimental,l2,eps,0.25',
-    'microsoftresnet50,experimental,l2,eps,0.5': 'MicrosoftResNet50,experimental,l2,eps,0.5',
-    'microsoftresnet50,experimental,l2,eps,1': 'MicrosoftResNet50,experimental,l2,eps,1',
-    'microsoftresnet50,experimental,l2,eps,3': 'MicrosoftResNet50,experimental,l2,eps,3',
-    'microsoftresnet50,experimental,l2,eps,5': 'microsoftResNet50,experimental,l2,eps,5',
-    'microsoftwide_resnet50_4,experimental,l2,eps,0.25': 'microsoftWide_ResNet50_4,experimental,l2,eps,0.25',
-    'microsoftwide_resnet50_4,experimental,l2,eps,0.5': 'microsoftWide_ResNet50_4,experimental,l2,eps,0.5',
-    'microsoftwide_resnet50_4,experimental,l2,eps,1': 'microsoftWide_ResNet50_4,experimental,l2,eps,1',
-    'microsoftwide_resnet50_4,experimental,l2,eps,3': 'microsoftWide_ResNet50_4,experimental,l2,eps,3',
-    'microsoftwide_resnet50_4,experimental,l2,eps,5': 'microsoftWide_ResNet50_4,experimental,l2,eps,5',
-    'timm,tf_efficientnet_b7_ns,nonrobust': 'timm,tf_efficientnet_b7_ns,nonrobust',
-    'timm,tf_efficientnet_b7_ap,nonrobust': 'timm,tf_efficientnet_b7_ap,nonrobust',
-    'timm,swin_large_patch4_window12_384,nonrobust': 'timm,swin_large_patch4_window12_384,nonrobust',
-    'timm,tf_efficientnet_b7,nonrobust': 'timm,tf_efficientnet_b7,nonrobust',
-    # fundusKaggle
-    'max:experimental,resnet50,trades_10-01-2022_15:48:30_ft=0.0001;at=10;ep=3': 'Max:experimental,ResNet50,TRADES_10-01-2022_15:48:30_ft=0.0001;at=10;ep=3',
-    'max:experimental,resnet50,plain_10-01-2022_00:10:30': 'Max:experimental,ResNet50,plain_10-01-2022_00:10:30',
-    'max:experimental,resnet50,trades_28-01-2022_13:45:42': 'Max:experimental,ResNet50,TRADES_28-01-2022_13:45:42',
-    'max:experimental,resnet50,trades_14-01-2022_13:01:06': 'Max:experimental,ResNet50,TRADES_14-01-2022_13:01:06',
-    'max:experimental,resnet50,trades_10-01-2022_15:40:23': 'Max:experimental,ResNet50,TRADES_10-01-2022_15:40:23',
-    'max:experimental,resnet50,trades_10-01-2022_15:48:30': 'Max:experimental,ResNet50,TRADES_10-01-2022_15:48:30',
-    'max:experimental,resnet50,trades_29-12-2021_12:39:24': 'Max:experimental,ResNet50,TRADES_29-12-2021_12:39:24',
-    'max:experimental,resnet50,trades_29-12-2021_12:37:57': 'Max:experimental,ResNet50,TRADES_29-12-2021_12:37:57',
-    'max:experimental,resnet50,trades_27-12-2021_17:20:51': 'Max:experimental,ResNet50,TRADES_27-12-2021_17:20:51',
-    'max:experimental,resnet50,plain_02-04-2021_08:15:08': 'Max:experimental,ResNet50,plain_02-04-2021_08:15:08',
-    'max:experimental,ResNet50,trades_01-10-2021_22:28:29': 'Max:experimental,ResNet50,TRADES_01-10-2021_22:28:29',
-    'max:experimental,resnet50,trades_06-11-2021_15:39:13': 'Max:experimental,ResNet50,TRADES_06-11-2021_15:39:13',
-    'max:experimental,resnet50,trades_24-10-2021_22:55:07': 'Max:experimental,ResNet50,TRADES_24-10-2021_22:55:07',
-    'max:experimental,resnet50,trades_02-11-2021_13:55:10': 'Max:experimental,ResNet50,TRADES_02-11-2021_13:55:10',
-    'max:experimental,resnet50,trades_04-04-2021_07:56:59': 'Max_experimental,ResNet50,TRADES_04-04-2021_07:56:59',
-    'max:experimental,resnet50,trades_01-10-2021_22:28:29': 'Max_experimental,ResNet50,TRADES_01-10-2021_22:28:29',
-    'Anon1:finetuning_experimental,wide_resnet50_4,model_2021-09-23space13:40:42.945427': 'Anon1:finetuning_experimental,Wide_ResNet50_4,model_2021-09-23???13:40:42.945427',
-    'Anon1:finetuning_experimental,max=resnet50,model_2021-09-29space13:06:22.590333': 'Anon1:finetuning_experimental,Max=ResNet50,model_2021-09-29SPACE13:06:22.590333',
-    'Anon1:finetuning_experimental,wide_resnet50_4,model_2021-09-28space19:52:12.481420': 'Anon1:finetuning_experimental,Wide_ResNet50_4,model_2021-09-28SPACE19:52:12.481420',
-    # OCT
-    'max:experimental,rmtin1000:resnet50,trades_02-05-2022_17:17:01': 'Max:experimental,rmtIN1000:ResNet50,TRADES_02-05-2022_17:17:01',
-}
-
-model_name_to_folder = {
-    'cifar10': 'Cifar10Models',
-    'restrictedimagenet': 'RestrictedImageNetModels',
-    'lsun_scenes': 'LSUNScenesModels',
-    'celeba': 'CELEBAModels',
-    'funduskaggle': 'fundusKaggleModels',
-    'imagenet1000': 'ImageNet1000',
-    'oct': 'OCTModels',
-    'eyepacs': 'EyePacsModels'
-}
+model_name_to_folder = {'oct': 'OCTModels', 
+                        'eyepacs': 'EyePacsModels'
+                       }
 
 dict_noises_like = {'uniform': lambda x: 2 * torch.rand_like(x) - 1,
                     'gaussian': lambda x: torch.randn_like(x)}

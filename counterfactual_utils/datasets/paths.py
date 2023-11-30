@@ -8,7 +8,7 @@ def get_base_dir_ARAM():
     if 'slurm' in machine_name:
         base = '/mnt/qb/hein/valentyn/RATIO/'
     else:
-        base = '/gpfs01/berens/user/iilanchezian/Projects/DVCEs_private/'
+        base = '/gpfs01/berens/user/iilanchezian/Projects/retinal_image_counterfactuals/'
     return base
 
 def get_EyePacs_path():

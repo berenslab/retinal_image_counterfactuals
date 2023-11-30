@@ -16,13 +16,13 @@ from auto_attack.autopgd_base import APGDAttack
 
 # ToDo: solve circular import and put the lambda-function in the common config
 ##from utils.config import FeatureDist_implemented
-from utils_svces.FW import maxlin, LMO
-##from utils_svces.FeatureDist import FeatureDist
-from utils_svces.functions import n_restarts, noise_magnitute, blockPrint, comp_logical_tensors
-from utils_svces.adversarial_attacks.utils import project_perturbation
-##from utils_svces.adversarial_attacks.LPIPS_projection import project_onto_LPIPS_ball
+from counterfactual_utils.FW import maxlin, LMO
+##from counterfactual_utils.FeatureDist import FeatureDist
+from counterfactual_utils.functions import n_restarts, noise_magnitute, blockPrint, comp_logical_tensors
+from counterfactual_utils.adversarial_attacks.utils import project_perturbation
+##from counterfactual_utils.adversarial_attacks.LPIPS_projection import project_onto_LPIPS_ball
 ##from datasets import inverse_data_transform
-import utils_svces.adversarial_attacks as at
+import counterfactual_utils.adversarial_attacks as at
 
 #try:
 #    from adv_lib.utils.lagrangian_penalties import all_penalties

@@ -7,8 +7,8 @@ from .in_distribution_training import InDistributionTraining
 from .train_loss import MinMaxLoss, TrainLoss
 from .helpers import get_adversarial_attack, create_attack_config, get_distance
 
-from utils_svces.adversarial_attacks import *
-from utils_svces.distances import LPDistance
+from counterfactual_utils.adversarial_attacks import *
+from counterfactual_utils.distances import LPDistance
 
 class AdversarialLoss(MinMaxLoss):
     def __init__(self, model, epoch, attack_config, num_classes, inner_objective='crossentropy', log_stats=False, name_prefix=None):

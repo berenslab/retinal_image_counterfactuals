@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torchvision
 from tqdm import tqdm
 
-from utils_svces.config import model_type_to_folder, model_name_to_folder
+from counterfactual_utils.config import model_type_to_folder, model_name_to_folder
 import os
 import pickle
 

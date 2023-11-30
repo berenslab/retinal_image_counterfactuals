@@ -1,16 +1,16 @@
 from distutils.util import strtobool
-import utils_svces.train_types.schedulers as schedulers
-import utils_svces.train_types.optimizers as optimizers
-import utils_svces.train_types.msda as msda
-from utils_svces.datasets import *
-from utils_svces.model_normalization import *
-import utils_svces.train_types as tt
+import counterfactual_utils.train_types.schedulers as schedulers
+import counterfactual_utils.train_types.optimizers as optimizers
+import counterfactual_utils.train_types.msda as msda
+from counterfactual_utils.datasets import *
+from counterfactual_utils.model_normalization import *
+import counterfactual_utils.train_types as tt
 import os
 import yaml
 import argparse
 import sys
-import utils_svces.models.model_factory_32 as factory_32
-import utils_svces.models.model_factory_224 as factory_224
+import counterfactual_utils.models.model_factory_32 as factory_32
+import counterfactual_utils.models.model_factory_224 as factory_224
 
 models_dict = {"cifar10": Cifar10Wrapper,
                "restrictedimagenet": RestrictedImageNetWrapper,

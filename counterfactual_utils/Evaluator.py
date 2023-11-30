@@ -6,8 +6,8 @@ import matplotlib.colors as mcolors
 import timm
 
 from blended_diffusion.utils_blended.model_normalization import ResizeAndMeanWrapper
-from utils_svces.model_normalization import ImageNetWrapper
-from utils_svces.load_trained_model import load_model as load_model_ratio
+from counterfactual_utils.model_normalization import ImageNetWrapper
+from counterfactual_utils.load_trained_model import load_model as load_model_ratio
 try:
     from main import ask_overwrite_folder
 except Exception as err:
@@ -16,10 +16,10 @@ import torch.distributed as dist
 import torch
 import glob
 import matplotlib.pyplot as plt
-from utils_svces.temperature_wrapper import TemperatureWrapper, get_temperature_folder
-from utils_svces.config import pretty, get_NVAE_MSE, get_NVAE_class_model, models_dict, \
-    Evaluator_model_names_cifar10, Evaluator_model_names_imagenet1000, descr_args_generate, descr_args_rst_stab, \
-    loader_all, temperature_scaling_dl_dict, Evaluator_model_names_funduskaggle, Evaluator_model_names_oct, \
+from counterfactual_utils.temperature_wrapper import TemperatureWrapper, get_temperature_folder
+from counterfactual_utils.config import pretty, get_NVAE_MSE, get_NVAE_class_model, models_dict, \
+    descr_args_generate, descr_args_rst_stab, \
+    loader_all, temperature_scaling_dl_dict, Evaluator_model_names_oct, \
     full_dataset_dict, Evaluator_model_names_eyepacs
 
 #from .GAN_metric import compute_score_raw
@@ -31,7 +31,7 @@ import torchvision.transforms as transforms
 from .config import FIDDataset, Evaluator_model_names_dict
 from tqdm import tqdm
 from robustbench import load_model as load_model_benchmark
-from utils_svces.model_normalization import IdentityWrapper, NormalizationWrapper
+from counterfactual_utils.model_normalization import IdentityWrapper, NormalizationWrapper
 #import robust_finetuning.data as data_rf
 #import robust_finetuning.eval as utils_eval
 
@@ -79,13 +79,7 @@ class Evaluator(object):
         folders = {}
         model_loaders = {}
 
-        if dataset.lower() in ['cifar10', 'tinyimages']:
-            type_ = Evaluator_model_names_cifar10[model_id]
-        elif dataset.lower() in ['imagenet1000']:
-            type_ = Evaluator_model_names_imagenet1000[model_id]
-        elif dataset.lower() in ['funduskaggle']:
-            type_ = Evaluator_model_names_funduskaggle[model_id]
-        elif dataset.lower() in ['oct']:
+        if dataset.lower() in ['oct']:
             type_ = Evaluator_model_names_oct[model_id]
         elif dataset.lower() in ['eyepacs']:
             type_ = Evaluator_model_names_eyepacs[model_id] #temp change to Evaluator_model_names_eyepacs

@@ -7,7 +7,7 @@ import os
 import numpy as np
 
 from .paths import get_CIFAR10_C_path, get_CIFAR100_C_path
-from utils_svces.datasets.augmentations.cifar_augmentation import get_cifar10_augmentation
+from counterfactual_utils.datasets.augmentations.cifar_augmentation import get_cifar10_augmentation
 
 DEFAULT_TRAIN_BATCHSIZE = 128
 DEFAULT_TEST_BATCHSIZE = 128

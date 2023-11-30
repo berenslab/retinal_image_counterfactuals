@@ -8,8 +8,8 @@ from torch.utils.data import DataLoader, SubsetRandomSampler
 DEFAULT_TRAIN_BATCHSIZE = 128
 DEFAULT_TEST_BATCHSIZE = 128
 
-from utils_svces.datasets.augmentations.imagenet_augmentation import get_imageNet_augmentation
-from utils_svces.datasets.augmentations.cifar_augmentation import get_cifar10_augmentation
+from counterfactual_utils.datasets.augmentations.imagenet_augmentation import get_imageNet_augmentation
+from counterfactual_utils.datasets.augmentations.cifar_augmentation import get_cifar10_augmentation
 
 # LSUN classroom
 def get_LSUN_CR(train=False, batch_size=None, size=32):

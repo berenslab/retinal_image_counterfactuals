@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-import utils_svces.distances as d
+import counterfactual_utils.distances as d
 
 from .ACET_training import ACETObjective
 from .CEDA_training import CEDAObjective

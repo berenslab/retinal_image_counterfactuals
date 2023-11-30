@@ -1,8 +1,8 @@
-from utils_svces.models.models_32x32.resnet import ResNet50, ResNet18, ResNet34
-from utils_svces.models.models_32x32.fixup_resnet import fixup_resnet20, fixup_resnet56
-from utils_svces.models.models_32x32.wide_resnet import WideResNet28x2, WideResNet28x10, WideResNet28x20, WideResNet34x20, WideResNet40x10, WideResNet70x16, WideResNet34x10
+from counterfactual_utils.models.models_32x32.resnet import ResNet50, ResNet18, ResNet34
+from counterfactual_utils.models.models_32x32.fixup_resnet import fixup_resnet20, fixup_resnet56
+from counterfactual_utils.models.models_32x32.wide_resnet import WideResNet28x2, WideResNet28x10, WideResNet28x20, WideResNet34x20, WideResNet40x10, WideResNet70x16, WideResNet34x10
 from timm.models.factory import create_model
-from utils_svces.models.models_32x32.pyramid import aa_PyramidNet
+from counterfactual_utils.models.models_32x32.pyramid import aa_PyramidNet
 
 def try_number_conversion(s):
     try:

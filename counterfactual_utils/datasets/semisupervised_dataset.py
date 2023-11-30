@@ -3,7 +3,7 @@ Datasets with unlabeled (or pseudo-labeled) ref_data
 """
 
 from torch.utils.data import Sampler
-from utils_svces.datasets.augmentations.cifar_augmentation import get_cifar10_augmentation
+from counterfactual_utils.datasets.augmentations.cifar_augmentation import get_cifar10_augmentation
 from .paths import get_base_data_dir, get_CIFAR10_path, get_svhn_path
 from torchvision.datasets import CIFAR10, SVHN
 from torch.utils.data import Sampler, Dataset

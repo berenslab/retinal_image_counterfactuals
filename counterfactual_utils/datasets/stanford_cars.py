@@ -1,7 +1,7 @@
 import torch
 import torch.distributions
 from torch.utils.data import DataLoader, Dataset
-from utils_svces.datasets.augmentations.imagenet_augmentation import get_imageNet_augmentation
+from counterfactual_utils.datasets.augmentations.imagenet_augmentation import get_imageNet_augmentation
 from .paths import get_stanford_cars_path
 from scipy.io import loadmat
 from torchvision.datasets.folder import default_loader

@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 
 from .combo_dataset import ComboDataset
 from .paths import get_svhn_path
-from utils_svces.datasets.augmentations.svhn_augmentation import get_SVHN_augmentation
+from counterfactual_utils.datasets.augmentations.svhn_augmentation import get_SVHN_augmentation
 
 DEFAULT_TRAIN_BATCHSIZE = 128
 DEFAULT_TEST_BATCHSIZE = 128

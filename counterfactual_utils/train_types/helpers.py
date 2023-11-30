@@ -3,12 +3,12 @@ from functools import partial
 from blended_diffusion.utils_blended.model_normalization import ResizeWrapper, ResizeAndMeanWrapper
 
 import torch.nn.functional as F
-from utils_svces.adversarial_attacks import PGD, MonotonePGD, APGDAttack, ArgminPGD, UniformNoiseGenerator,\
+from counterfactual_utils.adversarial_attacks import PGD, MonotonePGD, APGDAttack, ArgminPGD, UniformNoiseGenerator,\
     NormalNoiseGenerator, L2FABAttack, LinfFABAttack, CutoutPGD, AFWAttack
 #from blended_diffusion.optimization import DiffusionAttack
-from utils_svces.distances import LPDistance
+from counterfactual_utils.distances import LPDistance
 from torch.nn.modules.batchnorm import _BatchNorm
-from utils_svces.get_config import get_config
+from counterfactual_utils.get_config import get_config
 #########
 
 def interleave_forward(model, batches, in_parallel=True):

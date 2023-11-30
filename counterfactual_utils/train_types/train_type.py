@@ -3,7 +3,7 @@ import torch.nn as nn
 import warnings
 import torch.nn.functional as F
 import torch.optim as optim
-from utils_svces.average_model import AveragedModel
+from counterfactual_utils.average_model import AveragedModel
 import torch.cuda.amp as amp
 import copy
 import numpy as np

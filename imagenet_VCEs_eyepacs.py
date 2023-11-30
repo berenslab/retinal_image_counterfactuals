@@ -6,10 +6,10 @@ from torchvision import transforms
 from blended_diffusion.optimization import DiffusionAttack
 from blended_diffusion.optimization.arguments import get_arguments
 from configs import get_config
-from utils_svces.datasets.paths import get_imagenet_path
-from utils_svces.datasets.imagenet import get_imagenet_labels
-import utils_svces.datasets as dl
-from utils_svces.functions import blockPrint
+from counterfactual_utils.datasets.paths import get_imagenet_path
+from counterfactual_utils.datasets.imagenet import get_imagenet_labels
+import counterfactual_utils.datasets as dl
+from counterfactual_utils.functions import blockPrint
 import torch
 import torch.nn as nn
 import numpy as np
@@ -20,17 +20,17 @@ import matplotlib as mpl
 import seaborn as sns
 mpl.use('Agg')
 import matplotlib.pyplot as plt
-from utils_svces.load_trained_model import load_model
+from counterfactual_utils.load_trained_model import load_model
 from tqdm import trange
 from torchvision.transforms import functional as TF
 import cv2
 from PIL import Image
 from time import sleep
-from utils_svces.train_types.helpers import create_attack_config, get_adversarial_attack
+from counterfactual_utils.train_types.helpers import create_attack_config, get_adversarial_attack
 from matplotlib.colors import LinearSegmentedColormap
 from skimage import feature, transform
 
-from utils_svces.Evaluator import Evaluator
+from counterfactual_utils.Evaluator import Evaluator
 
 
 hps = get_config(get_arguments())
@@ -367,12 +367,12 @@ for i, (img_idx, target_classes) in enumerate(selected_vces):
             break    
 """
 
-filenames = os.listdir('images_eyepacs_v2')
+filenames = os.listdir('samples_eyepacs')
 filenames = sorted(filenames)
 print(filenames)
 
 files_list = filenames #* 2
-files_list = files_list[80:]
+# files_list = files_list[80:]
 files_list = files_list[::-1]
 num_imgs = len(files_list) #* 2
 
@@ -383,7 +383,7 @@ targets_tensor = torch.zeros(num_imgs, dtype=torch.long)
 labels_tensor = torch.zeros(num_imgs, dtype=torch.long)
 
 for img_name in files_list:#[f'{name}.png' for name in filenames]: #[15, 16, 17, 18][::-1]]: #[1, 2, 3, 4, 5, 6, 7][::-1]]:
-    init_image_pil = Image.open(f'images_eyepacs_v2/{img_name}').convert("RGB")
+    init_image_pil = Image.open(f'samples_eyepacs/{img_name}').convert("RGB")
     init_image_pil = init_image_pil.resize((img_size, img_size), Image.LANCZOS)  # type: ignore
     init_image = TF.to_tensor(init_image_pil).to(device).unsqueeze(0)
     print('prepending img', imgs.shape)
@@ -472,10 +472,10 @@ for method in [hps.method]:
         # dir = f'{out_dir}/{imagenet_mode}/healthy_{norm}_{hps.l2_sim_lambda}_l1_{hps.l1_sim_lambda}_l{hps.lp_custom}_{hps.lp_custom_value}_classifier_{hps.classifier_type}_{hps.second_classifier_type}_{hps.third_classifier_type}_{hps.classifier_lambda}_reg_lpips_{hps.lpips_sim_lambda}_example_{hps.timestep_respacing}_steps_skip_{hps.skip_timesteps}_start_{hps.gen_type}_deg_{str(hps.deg_cone_projection)}_s_{str(hps.seed)}{"_bl" if hps.use_blended else ""}_wid_{hps.world_id}_{hps.world_size}_{hps.method}/'
         if hps.second_classifier_type == -1:
             #dir = f'EyePacsVCEs/EyePacsModel_{hps.classifier_type}_{hps.method}_{hps.lp_custom}_{hps.lp_custom_value}_all_diff_maps/'
-            dir = f'EyePacsVCEs/EyePacsModel_{hps.classifier_type}_{hps.method}_dr_to_healthy_reg/'
+            dir = f'EyePacsVCEs/EyePacsModel_{hps.classifier_type}_{hps.method}'
         else:
             #dir = f'EyePacsVCEs/EyePacsModel_{hps.classifier_type}_{hps.second_classifier_type}_{hps.method}_{hps.lp_custom}_{hps.lp_custom_value}_all_diff_maps/'
-            dir = f'EyePacsVCEs/EyePacsModel_{hps.classifier_type}_{hps.second_classifier_type}_{hps.method}_dr_to_healthy_reg/'
+            dir = f'EyePacsVCEs/EyePacsModel_{hps.classifier_type}_{hps.second_classifier_type}_{hps.method}'
         pathlib.Path(dir).mkdir(parents=True, exist_ok=True)
 
         out_imgs = torch.zeros((num_imgs, num_targets, num_radii) + img_dimensions)

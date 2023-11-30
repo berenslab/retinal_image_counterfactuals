@@ -1,7 +1,7 @@
 from torchvision import transforms
 import torch
-from utils_svces.datasets.augmentations.autoaugment import SVHNPolicy, CIFAR10Policy
-from utils_svces.datasets.augmentations.cutout import Cutout
+from counterfactual_utils.datasets.augmentations.autoaugment import SVHNPolicy, CIFAR10Policy
+from counterfactual_utils.datasets.augmentations.cutout import Cutout
 from .utils import INTERPOLATION_STRING_TO_TYPE
 
 SVHN_mean = (0.4377, 0.4438, 0.4728)
