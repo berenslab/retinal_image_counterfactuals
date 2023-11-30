@@ -271,20 +271,21 @@ for i, (img_idx, target_classes) in enumerate(selected_vces):
             break    
 """
 
-filenames = os.listdir('samples_oct_val')
-filenames = sorted(filenames)[:40]
+filenames = os.listdir(hps.image_dir)
+filenames = sorted(filenames)
+print(filenames)
 
-num_imgs = len(filenames) * 3 
+files_list = filenames #* 2
+files_list = files_list[::-1]
+num_imgs = len(files_list) #* 2
 
 imgs = torch.zeros((num_imgs, 3, img_size, img_size))
 segmentations = torch.zeros((num_imgs, 3, img_size, img_size))
 targets_tensor = torch.zeros(num_imgs, dtype=torch.long)
 labels_tensor = torch.zeros(num_imgs, dtype=torch.long)
 
-files_list = filenames * 3 
-files_list = files_list[::-1]
-for img_name in files_list:#[f'{name}.png' for name in filenames]: #[15, 16, 17, 18][::-1]]: #[1, 2, 3, 4, 5, 6, 7][::-1]]:
-    init_image_pil = Image.open(f'samples_oct_val/{img_name}').convert("RGB")
+for img_name in files_list:
+    init_image_pil = Image.open(f'{hps.image_dir}/{img_name}').convert("RGB")
     init_image_pil = init_image_pil.resize((img_size, img_size), Image.LANCZOS)  # type: ignore
     init_image = TF.to_tensor(init_image_pil).to(device).unsqueeze(0)
     print('prepending img', imgs.shape)
@@ -313,10 +314,9 @@ for img_name in files_list:#[f'{name}.png' for name in filenames]: #[15, 16, 17,
 
 
 print('prepending target', targets_tensor.shape)
-targets_ = [1]*len(filenames)
-targets_.extend([2]*len(filenames))
-targets_.extend([3]*len(filenames))
-# targets_.extend([3]*len(filenames))#[0, 0, 0, 2, 2, 948, 948, 948]#[649, 649] #[724, 959, 458, 991]#[938, 936]  #[0, 0] #[293, 293] #[701, 701] #[0, 0, 2, 2, 948, 948, 948]
+targets_ = [0]*len(filenames)
+# targets_.extend([2]*len(filenames))
+# targets_.extend([3]*len(filenames))
 targets_tensor = torch.cat([torch.tensor(targets_), targets_tensor], 0)
 # labels_tensor = torch.cat([torch.tensor(targets_), labels_tensor], 0)
 print('prepending target', targets_tensor.shape)

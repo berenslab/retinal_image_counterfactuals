@@ -772,8 +772,8 @@ def descr_args_generate(threat_model=None, pretrained=False,
 # ToDo: generalize for different BiT models
 temperature_scaling_dl_dict = lambda batch_size, img_size, project_folder, data_folder, model_name=None: \
     {
-        # 'oct': get_oct(split='test', batch_size=batch_size, size=img_size, project_folder=project_folder,
-        #                data_folder=data_folder, augm_type='none'),
+        'oct': get_oct(split='test', batch_size=batch_size, size=img_size, project_folder=project_folder,
+                       data_folder=data_folder, augm_type='none'),
         # 'cifar10': dl.get_CIFAR10_1(batch_size=batch_size, size=img_size, project_folder=project_folder, data_folder=data_folder), # ToDo: was the temperature computed correctly on BiT?
         #'imagenet1000': dl.get_ImageNet1000_idx(
         #    idx_path=f'{get_base_dir(project_folder)}/ImageNet1000/imagenet_val_random_idx_calibration.npy',
@@ -783,7 +783,7 @@ temperature_scaling_dl_dict = lambda batch_size, img_size, project_folder, data_
         #               # ToDo: put in the config
         #             balanced=False, project_folder=project_folder, data_folder=data_folder)
 
-        'eyepacs': get_EyePacs(split='val', batch_size=batch_size, augm_type='none', size=img_size, balanced= False, data_folder=data_folder)
+        # 'eyepacs': get_EyePacs(split='val', batch_size=batch_size, augm_type='none', size=img_size, balanced= False, data_folder=data_folder)
         # 'restrictedimagenet': dl.imagenet_subsets.get_restrictedImageNet(train=False, batch_size=batch_size,
         #                                                                 augm_type='none', num_samples=2000, balanced=False), # num_samples=200
         # 'imagenet1000': '',
