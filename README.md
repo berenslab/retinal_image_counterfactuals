@@ -11,10 +11,23 @@ or OCT scans.
 ## **Examples**
 
 ### Retinal Fundus Counterfactuals
-TO DO
+<p align="center">
+  <img src="counterfactuals_examples/fundus_counterfactuals_example1.png" />
+</p>
+
+<p align="center">
+  <img src="counterfactuals_examples/fundus_counterfactuals_example2.png" />
+</p>
 
 ### OCT counterfactuals
-TO DO
+<p align="center">
+  <img src="counterfactuals_examples/oct_counterfactuals_example1.png" />
+</p>
+
+<p align="center">
+  <img src="counterfactuals_examples/oct_counterfactual_example2.png" />
+</p>
+
 
 ## **Usage**
 
