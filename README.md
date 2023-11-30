@@ -6,7 +6,13 @@ It is based on the ["Diffusion Visual Counterfactual Explanations"](https://gith
 repository. 
 
 Here we provide the models and code to generate diffusion counterfactuals using retinal fundus images 
-or OCT scans. 
+and OCT scans. Our fundus classifiers are trained on the task of detecting Diabetic Retinopathy detection. With these classifiers,
+counterfactuals can be generated from any fundus image to the healthy class or DR class. We also provide 5-class fundus classifiers, with which counterfactuals can be generated to one of the following classes: healthy, mild, moderate, severe and proliferative. OCT classifiers are trained to classify among the classes normal, choroidal neovascularization (CNV), drusen and Diabetic Macular Edema (DME) and OCT counterfactuals can be generated to any of these 4 classes. 
+
+## **Diffusion Counterfactuals**
+<p align="center">
+  <img src="counterfactuals_examples/diffusionvce_summary.png" />
+</p>
 
 ## **Examples**
 
@@ -24,18 +30,11 @@ or OCT scans.
   <img src="counterfactuals_examples/oct_counterfactuals_example1.png" />
 </p>
 
-<p align="center">
-  <img src="counterfactuals_examples/oct_counterfactual_example2.png" />
-</p>
-
 
 ## **Usage**
 
 ### Requirements and installations
-Download models from the following link or use the following code_snippet:
-TO DO
-The downloaded directory contains 4 models trained on retinal fundus images: plain binary model, robust binary model, 
-plain 5-class model and robust 5-class model. There are 2 models trained on OCT data: plain and robust 4-class classifiers. 
+Link to the models and requirements will be provided here soon. 
  
 ### Generate diffusion counterfactuals 
 To generate fundus diffusion counterfactuals of the sample images provided in samples_fundus directory, run the following snippet
