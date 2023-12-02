@@ -203,6 +203,12 @@ def get_arguments(parser=None) -> argparse.Namespace:
         action="store_true",
         dest="export_assets",
     )
+    parser.add_argument(
+        "--save_diffs",
+        help="Whether to save the difference maps between original and counterfactuals",
+        action="store_true",
+        dest="save_diffs",
+    )
 
     parser.add_argument('--gpu', '--list', nargs='+', default=[0],
                         help='GPU indices, if more than 1 parallel modules will be called')

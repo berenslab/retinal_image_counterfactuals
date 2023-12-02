@@ -12,7 +12,8 @@ def get_config(args):
         if key in [
                 'diffusion_checkpoint',
                 'timestep_respacing', 'skip_timesteps',
-                'lp_custom', 'lp_custom_value', 'lpips_sim_lambda', 'l2_sim_lambda', 'range_lambda', 'l1_sim_lambda',
+                'lp_custom', 'lp_custom_value', 'lpips_sim_lambda', 'l2_sim_lambda', 'range_lambda',    
+                'l1_sim_lambda',
                 'deg_cone_projection',
                 'clip_guidance_lambda', 'classifier_lambda',
                 'num_imgs', 'batch_size',

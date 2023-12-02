@@ -1,6 +1,5 @@
 import random
 
-from torchvision.utils import save_image
 from torchvision import transforms
 
 from blended_diffusion.optimization import DiffusionAttack
@@ -10,6 +9,7 @@ from counterfactual_utils.datasets.paths import get_imagenet_path
 from counterfactual_utils.datasets.imagenet import get_imagenet_labels
 import counterfactual_utils.datasets as dl
 from counterfactual_utils.functions import blockPrint
+from counterfactual_utils.plot import _plot_counterfactuals
 import torch
 import torch.nn as nn
 import numpy as np
@@ -31,139 +31,6 @@ from matplotlib.colors import LinearSegmentedColormap
 from skimage import feature, transform
 
 from counterfactual_utils.Evaluator import Evaluator
-
-def get_difference_image(img_original, img_vce, dilation=0.5):
-    img_original = img_original.numpy()
-    img_vce = img_vce.numpy()
-    
-    grayscale_original = np.dot(img_original[...,:3], [0.2989, 0.5870, 0.1140])
-    grayscale_vce = np.dot(img_vce[...,:3], [0.2989, 0.5870, 0.1140])
-
-    grayscale_diff = grayscale_original - grayscale_vce
-    grayscale_diff = np.abs(grayscale_diff)
-    min_diff = np.min(grayscale_diff)
-    max_diff = np.max(grayscale_diff)
-    min_diff = -max(abs(min_diff), max_diff)
-    max_diff = -min_diff
-    diff_scaled = (grayscale_diff - min_diff) / (max_diff - min_diff)
-    diff_scaled = np.clip(diff_scaled, 0, 1) * 255
-
-    original_greyscale = img_original if len(img_original.shape) == 2 else np.mean(img_original, axis=-1)
-    in_image_upscaled = transform.rescale(original_greyscale, dilation, mode='constant',
-                                          multichannel=False, anti_aliasing=True)
-    edges = feature.canny(in_image_upscaled).astype(float)
-    edges[edges < 0.5] = np.nan
-    edges[:5, :] = np.nan
-    edges[-5:, :] = np.nan
-    edges[:, :5] = np.nan
-    edges[:, -5:] = np.nan
-    overlay = edges
-
-    return diff_scaled, overlay
-
-def _plot_counterfactuals(dir, original_imgs, orig_labels, masks, targets,
-                          perturbed_imgs, perturbed_probabilities, original_probabilities,
-                          l2_distances, l4_distances, radii, class_labels, 
-                          filenames=None, img_idcs=None, num_imgs=None,
-                          method_descr=None, save_diffs=False):
-    num_radii = len(radii)
-    target_idx = 0
-    all_values = []
-
-    if img_idcs is None:
-        img_idcs = torch.arange(num_imgs, dtype=torch.long)
-
-    pathlib.Path(dir+'/single_images').mkdir(parents=True, exist_ok=True)
-    
-    ### Currently we only generate one counterfactual per image, due to stochastic nature of the method, it is possible to generate multiple counterfactuals for the same image
-    num_VCEs_per_image = 1 
-    for lin_idx in trange(int(len(img_idcs)/num_VCEs_per_image), desc=f'Image write'):
-
-        radius_idx = 0
-        lin_idx *= num_VCEs_per_image
-
-        img_idx = img_idcs[lin_idx]
-        in_probabilities = original_probabilities[img_idx, target_idx, radius_idx]
-
-        pred_original = in_probabilities.argmax()
-        pred_value = in_probabilities.max()
-
-        img_label = int(orig_labels[img_idx])
-        print('Image label: ', img_label)
-        
-        mask_original = masks[img_idx, :].permute(1,2,0).cpu().detach()
-        print(mask_original.max())
-        
-        ###Saving original image
-        img_original = original_imgs[img_idx, :].permute(1, 2, 0).cpu().detach()
-        original_image = img_original.clip(0, 1)
-        original_image = original_image.numpy() * 255
-        original_image = original_image.astype(np.uint8)
-        original_image_final = Image.fromarray(original_image)
-        original_image_final.save(os.path.join(dir, 'single_images', f'{img_idx}_original.png'), dpi=(300, 300))
-
-        for i in range(num_VCEs_per_image):
-            img = torch.clamp(perturbed_imgs[img_idx+i, target_idx, radius_idx].permute(1, 2, 0), min=0.0,
-                              max=1.0)
-            img_probabilities = perturbed_probabilities[img_idx+i, target_idx, radius_idx]
-
-            #Predictions, probabilities and distances between original and counterfactual images. 
-            img_target = targets[img_idx+i]
-            target_original = in_probabilities[img_target]
-            target_conf = img_probabilities[img_target]
-            l2 = l2_distances[img_idx + i, target_idx, radius_idx][0]
-            l4 = l4_distances[img_idx + i, target_idx, radius_idx][0]
-
-            #For storing predictions and probabilities of each image and it's counterfactual
-            values = {'img_idx': img_idx.numpy(), 'pred': class_labels[pred_original.numpy()],
-                      'pred_conf': pred_value.numpy(), 'target': class_labels[img_target],
-                      'final_target_conf': target_conf.numpy(), 'initial_target_conf': target_original.numpy(),
-                      'l2': l2.numpy(), 'l4':l4.numpy()}
-            all_values.append(values)
-
-            if method_descr is not None:
-                target_label = class_labels[img_target]
-                name_str = f'{img_idx}_{method_descr}_{target_label}'
-            else:
-                name_str = f'{img_idx}'
-
-            ### Creating and saving difference map
-            if save_diffs:
-                diff_scaled, overlay = get_difference_image(img_original.cpu(), img.cpu())
-
-                dx, dy = 0.05, 0.05
-                xx = np.arange(0.0, diff_scaled.shape[1], dx)
-                yy = np.arange(0.0, diff_scaled.shape[0], dy)
-                xmin, xmax, ymin, ymax = np.amin(xx), np.amax(xx), np.amin(yy), np.amax(yy)
-                extent = xmin, xmax, ymin, ymax
-                cmap = LinearSegmentedColormap.from_list('', ['white', 'red'])
-                cmap_original = plt.get_cmap('Greys_r')
-                cmap_original.set_bad(alpha=0)
-
-                diff_fig, diff_ax = plt.subplots(figsize=(5, 5), dpi=300, layout='constrained')
-                diff_ax.set_xticks([])
-                diff_ax.set_yticks([])
-                diff_ax.imshow(diff_scaled, extent=extent, interpolation='none', cmap=cmap)
-                if overlay is not None:
-                    diff_ax.imshow(overlay, extent=extent, interpolation='none', cmap=cmap_original, alpha=0.25)
-                diff_fig.savefig(os.path.join(dir, 'single_images', f'{name_str}_diff.png'), dpi=300)
-
-            ### Saving counterfactual image
-            ### TO DO: uncomment after adding masks folder
-            # if 'svce' in method_descr:
-            #     img = img * mask_original 
-            perturbed_image = img.numpy() * 255
-            perturbed_image = perturbed_image.astype(np.uint8)
-            perturbed_image_final = Image.fromarray(perturbed_image)
-            perturbed_image_final.save(os.path.join(dir, 'single_images', f'{name_str}.png'), dpi=(300,300))
-            
-
-    #Saving predictions, probabilities of predicted class for both original and counterfactual 
-    df = pd.DataFrame(data=all_values)
-    df.to_csv(os.path.join(dir, f'meta_{method_descr}.csv'))
-
-plot = False
-plot_top_imgs = True
 
 def set_device(hps):
     if len(hps.gpu)==0:
@@ -189,10 +56,16 @@ if __name__ == '__main__':
         blockPrint()
 
     device, num_devices = set_device(hps)
-
+    
+    dataset = hps.data.dataset_for_scorenet
     #Image size is 256 as diffusion model is trained with image size 256. 
     img_size = 256
-    out_dir = 'EyePacsVCEs'
+    if dataset.lower() == 'eyepacs':
+        out_dir = 'FundusCounterfactuals'
+    elif dataset.lower() == 'oct':
+        out_dir = 'OCTCounterfactuals'
+    else:
+        raise ValueError(f"The dataset {dataset.lower()} is not supported!")
     bs = hps.batch_size * len(hps.device_ids)
 
     #Setting seed. Note that results can change if order of images are changed. 
@@ -209,6 +82,7 @@ if __name__ == '__main__':
     filenames = sorted(filenames)[:2]
     print(filenames)
 
+    # Counterfactuals are generated to all classes 
     files_list = filenames * num_classes 
     files_list = files_list[::-1]
     num_imgs = len(files_list) 
@@ -234,7 +108,7 @@ if __name__ == '__main__':
         print('prepending labels_tensor', labels_tensor.shape)
         
         ##TO DO: uncomment after adding masks folder
-        # if hps.method.lower() == 'svces':
+        # if dataset.lower() == 'eyepacs' and hps.method.lower() == 'svces':
         #     mask_pil = Image.open(f'masks_eyepacs/{img_name}')
         #     mask_pil = mask_pil.resize((img_size, img_size), Image.LANCZOS)  # type: ignore
         #     mask_image = TF.to_tensor(mask_pil).to(device).unsqueeze(0)
@@ -242,7 +116,7 @@ if __name__ == '__main__':
         #     masks = torch.cat([mask_image, masks.to(device)], 0)
         #     print('prepending img', masks.shape)
 
-    
+    #Defining target classes here, counterfactuals are generated to all classes 
     print('prepending target', targets_tensor.shape)
     targets_ = [0]*len(filenames)
     for i in np.arange(num_classes-1):
@@ -290,11 +164,12 @@ if __name__ == '__main__':
 
             model_bs = bs
             if hps.second_classifier_type == -1:
-                dir = f'EyePacsVCEs/EyePacsModel_{hps.classifier_type}_{hps.method}'
+                dir = f'{out_dir}/Retina_{hps.method}_{hps.classifier_type}'
             else:
-                dir = f'EyePacsVCEs/EyePacsModel_{hps.classifier_type}_{hps.second_classifier_type}_{hps.method}'
+                dir = f'{out_dir}/Retina_{hps.method}_{hps.classifier_type}_{hps.second_classifier_type}'
+            
             pathlib.Path(dir).mkdir(parents=True, exist_ok=True)
-
+            
             out_imgs = torch.zeros((num_imgs, num_targets, num_radii) + img_dimensions)
             out_probabilities = torch.zeros((num_imgs, num_targets, num_radii, num_classes))
             in_probabilities = torch.zeros((num_imgs, num_targets, num_radii, num_classes))
@@ -394,18 +269,6 @@ if __name__ == '__main__':
                     :] = l4_distances_i.cpu().detach()
 
                 if (batch_idx + 1) % hps.plot_freq == 0 or batch_idx == n_batches-1:
-#                     data_dict = {}
-
-#                     data_dict['gt_imgs'] = imgs[:batch_end_idx]
-#                     data_dict['gt_labels'] = labels_tensor[:batch_end_idx]
-#                     data_dict['targets'] = targets_tensor[:batch_end_idx]
-#                     data_dict['counterfactuals'] = out_imgs[:batch_end_idx]
-#                     data_dict['out_probabilities'] = out_probabilities[:batch_end_idx]
-#                     data_dict['in_probabilities'] = in_probabilities[:batch_end_idx]
-#                     data_dict['radii'] = radii
-#                     data_dict['l4_distances'] = out_l2_distances[:batch_end_idx]
-#                     data_dict['l2_distances'] = out_l4_distances[:batch_end_idx]
-
                     _plot_counterfactuals(dir, imgs[:batch_end_idx], labels_tensor, 
                                           masks[:batch_end_idx],
                                           targets_tensor[:batch_end_idx],out_imgs[:batch_end_idx],

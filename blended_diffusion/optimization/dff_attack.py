@@ -383,11 +383,11 @@ class DiffusionAttack():
         self.classifier.eval()
 
         """
-        with open('/gpfs01/berens/user/iilanchezian/Projects/DVCEs_private/config.pickle', 'wb') as handle:
-            pickle.dump(self.classifier_config, handle, protocol=pickle.HIGHEST_PROTOCOL)
+#         with open('/gpfs01/berens/user/iilanchezian/Projects/DVCEs_private/config.pickle', 'wb') as handle:
+#             pickle.dump(self.classifier_config, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-        with open('/gpfs01/berens/user/iilanchezian/Projects/DVCEs_private/args.pickle', 'wb') as handle:
-            pickle.dump(args, handle, protocol=pickle.HIGHEST_PROTOCOL)
+#         with open('/gpfs01/berens/user/iilanchezian/Projects/DVCEs_private/args.pickle', 'wb') as handle:
+#             pickle.dump(args, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
         evaluator = Evaluator(args, self.classifier_config, {}, None)
 

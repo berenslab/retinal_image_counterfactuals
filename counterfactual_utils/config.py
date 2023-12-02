@@ -211,19 +211,6 @@ class ImageNetCustom(DatasetFolder):
         return sample, target, index
 
 
-"""
-         'BiT-M-R50x1-CIFAR10_nonrobust', 
-         'ResNet50', 
-         'ResNet50_nonrobust',
-         'rst_stab', 
-         'benchmark-Gowal2020Uncovering', 
-         'benchmark-Gowal2020Uncovering_improved', 
-         'benchmark-Wu2020Adversarial', 
-         'benchmark-PAT_improved', 
-         'benchmark-RLAT_improved',
-         """
-
-
 def pretty(d, indent=0):
     for key, value in d.items():
         print('\t' * indent + str(key))
@@ -244,10 +231,7 @@ def rm_substr_from_state_dict(state_dict, substr):
     return new_state_dict
 
 
-# ToDo: put the cpkt call in a separate file
 def Gowal2020UncoveringNet_load(threat_model='L2', project_folder=None):
-    # model = Gowal2020UncoveringNet()
-    # definition of the model is the same as Gowal2020Uncovering_extra, Gowal2020Uncovering_70_16_extra
     if threat_model == 'L1.5':
         model_path = f'{get_base_dir(project_folder)}/Cifar10Models/Gowal2020Uncovering_improved/' \
                      f'model_2021-10-21 15:47:59.655507 lr=0.01000 piecewise-5-5-5 ep=3 attack=afw fts=50 seed=0 iter=10 finetune_model at=L1.5 eps=1.5 balanced 500k no_rot/' \
@@ -278,7 +262,6 @@ def Augustin2020Adversarial_34_10Net_load(threat_model='L1.5'):
     else:
         raise ValueError('Such norm is not supported.')
 
-    # ToDo: Sehwag2021Proxy uses the same model as Augustin2020Adversarial_34_10_extra, but w/o a wrapper in the definition
     model = model_dicts[BenchmarkDataset('cifar10')][ThreatModel('L2')]['Sehwag2021Proxy']['model']()
     model.load_state_dict(
         rm_substr_from_state_dict(
@@ -327,7 +310,6 @@ def MadryNet(norm,
     model = load_model_Madry(modelname='Engstrom2019Robustness',
                              norm=norm,
                              device=device)
-    # ToDo: do checkpoint loading only once to save time
     if improved:
         if epsilon_finetuned is not None:
             model_path = os.path.join(ImageNet1000ModelsPath,
@@ -343,12 +325,11 @@ def MadryNet(norm,
 def MadryRobustNet(dataset_name,
                    arch,
                    model_name_id,
+                   num_classes,
                    norm,
                    device,
                    project_folder=''):
-    dataset_name_to_folder_dict = {'funduskaggle': 'fundusKaggleModels',
-                                   'cifar10': 'Cifar10Models',
-                                   'oct': 'OCTModels',
+    dataset_name_to_folder_dict = {'oct': 'OCTModels',
                                    'eyepacs': 'EyePacsModels'}
     state_dict_base_path = os.path.join(get_base_dir(project_folder), 'ImageNet1000Models/MadryRobustResNet50/')
     model = load_model_MadryRobust(modelname='Engstrom2019Robustness',
@@ -359,7 +340,7 @@ def MadryRobustNet(dataset_name,
         model = model.model
 
     model_arch = 'resnet50'
-    num_classes = 2
+    # num_classes = 2
 
     print(model)
 
@@ -410,7 +391,6 @@ def Anon1s_smaller_radius(eps, project_folder=None):
     return model
 
 
-# ToDo: put the cpkt call in a separate file
 def PAT_load(arch='resnet50',
              project_folder=None):
     model_path = f'{get_base_dir(project_folder)}/Cifar10Models/PAT/cifar/pat_self_0.5.pt',
@@ -514,31 +494,21 @@ def BagNets(model_name, device):
 
 def MaxNets(dataset_name, arch, model_name_id, num_classes, img_size, device='cuda:0', project_folder=''):
     if 'rmtIN1000:' in arch:
-        if dataset_name.lower() == 'oct':
-            n_cls = 4
-        elif dataset_name.lower() == 'eyepacs':
-            n_cls = 2 #5
-        else:
+        # if dataset_name.lower() == 'oct':
+        #     n_cls = 4
+        # elif dataset_name.lower() == 'eyepacs':
+        #     n_cls = 2 #5
+        # else:
+        if dataset_name.lower() not in ['oct', 'eyepacs']:
             raise ValueError(f"The dataset {dataset_name.lower()} is not supported!")
 
         model_arch = arch.replace("rmtIN1000:", "").lower()
         additional_hidden = 0
 
         print(f'[Replacing the last layer with {additional_hidden} '
-              f'hidden layers and 1 classification layer that fits the {dataset_name} dataset with num classes = {n_cls}.]')
+              f'hidden layers and 1 classification layer that fits the {dataset_name} dataset with num classes = {num_classes}.]')
 
-        model = timm.create_model(model_arch, num_classes=n_cls, in_chans=3, pretrained=True)
-        #model, checkpoint = model_utils.make_and_restore_model(
-        #    arch=model_arch, dataset=datasets.ImageNet(''), pytorch_pretrained=True)
-
-        #while hasattr(model, 'model'):
-        #    model = model.model
-
-        #model = utils.ft(
-        #    model_arch, model, n_cls, additional_hidden)
-
-        # model, checkpoint = model_utils.make_and_restore_model(arch=model, dataset=datasets.ImageNet(''),
-        #                                                       add_custom_forward=False)
+        model = timm.create_model(model_arch, num_classes=num_classes, in_chans=3, pretrained=True)
 
     else:
         if img_size in factory_dict:
@@ -581,20 +551,6 @@ def MaxNets(dataset_name, arch, model_name_id, num_classes, img_size, device='cu
                 os.path.join(get_base_dir(project_folder), dataset_name_to_folder_dict[dataset_name.lower()], arch,
                              f"*{model_name_id}*/best.pth"))[0]
 
-        """
-        temp_base = 'FundusModels/robust'
-        print(
-            f'searching in {os.path.join(temp_base, dataset_name_to_folder_dict[dataset_name.lower()], "ResNet50" if "rmtIN1000:" not in arch else "rmtIN1000*ResNet50", f"*{model_name_id}*/best.pth")}')
-        state_dict_file = insensitive_glob(
-            os.path.join(project_folder, temp_base, "0_25_l2.pth"))[0]
-        """
-
-        #state_dict_file = insensitive_glob(
-        #    os.path.join(temp_base, dataset_name_to_folder_dict[dataset_name.lower()],
-        #                 "ResNet50" if "rmtIN1000:" not in arch else "rmtIN1000*ResNet50",
-        #                 f"*{model_name_id}*/best.pth"))[0]
-        # print(f'searching in {os.path.join(get_base_dir(project_folder), dataset_name_to_folder_dict[dataset_name.lower()], f"*{model_name_id}*/best.pth")}')
-        # state_dict_file = insensitive_glob(os.path.join(get_base_dir(project_folder), dataset_name_to_folder_dict[dataset_name.lower()], f"*{model_name_id}*/best.pth"))[0]
     print(f'resotring file from {state_dict_file}')
 
     state_dict = torch.load(state_dict_file, map_location=device)
@@ -772,24 +728,11 @@ def descr_args_generate(threat_model=None, pretrained=False,
 # ToDo: generalize for different BiT models
 temperature_scaling_dl_dict = lambda batch_size, img_size, project_folder, data_folder, model_name=None: \
     {
-        'oct': get_oct(split='test', batch_size=batch_size, size=img_size, project_folder=project_folder,
-                       data_folder=data_folder, augm_type='none'),
-        # 'cifar10': dl.get_CIFAR10_1(batch_size=batch_size, size=img_size, project_folder=project_folder, data_folder=data_folder), # ToDo: was the temperature computed correctly on BiT?
-        #'imagenet1000': dl.get_ImageNet1000_idx(
-        #    idx_path=f'{get_base_dir(project_folder)}/ImageNet1000/imagenet_val_random_idx_calibration.npy',
-        #    model_name=model_name,
-        #    batch_size=batch_size, project_folder=project_folder, data_folder=data_folder),
-        # 'eyepacs': get_FundusKaggle(split='val', batch_size=batch_size, augm_type='none', clahe=True, preprocess='hist_eq', size=img_size,
-        #               # ToDo: put in the config
-        #             balanced=False, project_folder=project_folder, data_folder=data_folder)
-
-        # 'eyepacs': get_EyePacs(split='val', batch_size=batch_size, augm_type='none', size=img_size, balanced= False, data_folder=data_folder)
-        # 'restrictedimagenet': dl.imagenet_subsets.get_restrictedImageNet(train=False, batch_size=batch_size,
-        #                                                                 augm_type='none', num_samples=2000, balanced=False), # num_samples=200
-        # 'imagenet1000': '',
-        # 'funduskaggle': get_FundusKaggle(split='temperature', batch_size=batch_size, augm_type='none', clahe=True, preprocess='hist_eq', size=img_size, labels_type='onset2',
-        #               # ToDo: put in the config
-        #             balanced=False, project_folder=project_folder, data_folder=data_folder)
+        # 'oct': get_oct(split='test', batch_size=batch_size, size=img_size, 
+        #                project_folder=project_folder,
+        #                data_folder=data_folder, augm_type='none'),
+        'eyepacs': get_EyePacs(split='val', batch_size=batch_size, augm_type='none', size=img_size, 
+                               balanced= False, data_folder=data_folder)
     }
 
 full_dataset_dict = lambda batch_size, img_size, project_folder, data_folder, model_name=None: \

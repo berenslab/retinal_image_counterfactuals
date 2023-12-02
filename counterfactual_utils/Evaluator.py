@@ -140,6 +140,7 @@ class Evaluator(object):
                         descr_args['norm'] = arguments[0].split(':')[1]
                         descr_args['arch'] = arguments[1]
                         descr_args['model_name_id'] = arguments[2]
+                        descr_args['num_classes'] = len(self.config.data.class_labels)
                         descr_args['device'] = device
                         # descr_args['state_dict_base_path'] = here + '/ImageNet1000Models/MadryRobustResNet50/'
                     elif is_Microsoft:
