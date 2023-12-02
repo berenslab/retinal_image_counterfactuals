@@ -514,7 +514,7 @@ def MaxNets(dataset_name, arch, model_name_id, num_classes, img_size, device='cu
         if img_size in factory_dict:
             model, model_name, config = factory_dict[img_size].build_model(arch, num_classes)
         else:
-            raise ValueError(f'Model ftories are supported only for image sizes {factory_dict.keys()},'
+            raise ValueError(f'Model factories are supported only for image sizes {factory_dict.keys()},'
                              f' and not for {img_size}!')
 
     dataset_name_to_folder_dict = {'funduskaggle': 'fundusKaggleModels',
