@@ -44,7 +44,7 @@ Diffusion models are in checkpoints/, fundus classifiers in EyePacsModels/ and O
 To generate fundus diffusion counterfactuals of the sample images provided in samples_fundus directory, run the following snippet
 ```
 python generate_counterfactuals.py --config 'eyepacs_dvces_binary_cone_proj.yml' --denoise_dist_input --batch_size 5
-```
+``` 
 To save difference maps, use the flag --save_diffs:
 ```
 python generate_counterfactuals.py --config 'eyepacs_dvces_binary_cone_proj.yml' --denoise_dist_input --batch_size 5 --save_diffs
@@ -54,6 +54,7 @@ To generate OCT diffusion counterfactuals of the sample OCT images provided in s
 ```
 python generate_counterfactuals.py --config 'oct_dvces_4class_cone_proj.yml' --denoise_dist_input --batch_size 4
 ```
+Fundus counterfactuals are saved in FundusCounterfactuals/ and OCT counterfactuals are saved in OCTCounterfactuals/. A .csv file with model predictions and probabilities on both original image and generated counterfactual is also saved to the respective directories. 
 
 Other configuration files for 5-class counterfactuals and generating sparse counterfactuals are present in configs/. 
 
