@@ -22,10 +22,13 @@ To generate counterfactuals using diffusion models and classifiers, we use the m
 ## **Examples**
 
 ### Retinal Fundus Counterfactuals
+
+Diffusion Counterfactuals from a healthy fundus image:
 <p align="center">
   <img src="readme_images/fundus_binary_counterfactuals1.png" />
 </p>
 
+Diffusion Counterfactuals from a DR fundus image:
 <p align="center">
   <img src="readme_images/fundus_binary_counterfactuals2.png" />
 </p>
