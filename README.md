@@ -17,20 +17,22 @@ For OCT scans, counterfactuals can be generated to 4 different classes: "normal"
   <img src="counterfactuals_examples/diffusionvce_summary.png" />
 </p>
 
+To generate counterfactuals using diffusion models and classifiers, we use the method proposed in The NeurIps paper [Diffusion Visual Counterfactual Explanations](https://proceedings.neurips.cc/paper_files/paper/2022/hash/025f7165a452e7d0b57f1397fed3b0fd-Abstract-Conference.html). The main components are diffusion models, plain classifiers and adversarially robust classifiers. The reverse diffusion of the diffusion model is modified during sampling by slightly shifting the mean of the reverse transition probabilties. The shift in the mean is determined by the gradients of a classifier with respect to the image. Instead of directly using the gradients of the plain or adversarially robust classifier, we use the gradients of a adversarially robust classifier projected on a cone around the gradients of a plain classifier. 
+
 ## **Examples**
 
 ### Retinal Fundus Counterfactuals
 <p align="center">
-  <img src="counterfactuals_examples/fundus_counterfactuals_example1.png" />
+  <img src="readme_images/fundus_binary_counterfactuals1.png" />
 </p>
 
 <p align="center">
-  <img src="counterfactuals_examples/fundus_counterfactuals_example2.png" />
+  <img src="readme_images/fundus_binary_counterfactuals2.png" />
 </p>
 
 ### OCT counterfactuals
 <p align="center">
-  <img src="counterfactuals_examples/oct_counterfactuals_example1.png" />
+  <img src="readme_images/oct_counterfactuals_example1.png" />
 </p>
 
 
