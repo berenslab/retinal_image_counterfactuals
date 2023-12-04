@@ -726,13 +726,15 @@ def descr_args_generate(threat_model=None, pretrained=False,
 
 
 # ToDo: generalize for different BiT models
-temperature_scaling_dl_dict = lambda batch_size, img_size, project_folder, data_folder, model_name=None: \
+temperature_scaling_dl_dict =  \
     {
-        # 'oct': get_oct(split='test', batch_size=batch_size, size=img_size, 
-        #                project_folder=project_folder,
-        #                data_folder=data_folder, augm_type='none'),
-        'eyepacs': get_EyePacs(split='val', batch_size=batch_size, augm_type='none', size=img_size, 
-                               balanced= False, data_folder=data_folder)
+        'oct': lambda batch_size, img_size, project_folder, data_folder, model_name=None: \
+               get_oct(split='test', batch_size=batch_size, size=img_size,
+                       project_folder=project_folder,
+                       data_folder=data_folder, augm_type='none'),
+        'eyepacs': lambda batch_size, img_size, project_folder, data_folder, model_name=None: \
+                get_EyePacs(split='val', batch_size=batch_size, augm_type='none', size=img_size,
+                             balanced= False, data_folder=data_folder)
     }
 
 full_dataset_dict = lambda batch_size, img_size, project_folder, data_folder, model_name=None: \

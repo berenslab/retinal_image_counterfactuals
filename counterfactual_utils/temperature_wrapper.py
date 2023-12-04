@@ -79,7 +79,7 @@ class TemperatureWrapper(nn.Module):
             confidences = torch.zeros((50000, 1000))
             counter = 0
             with torch.no_grad():
-                for out in tqdm(loader_full_dataset(batch_size, img_size, project_folder=project_folder, data_folder=data_folder, model_name=type_)[dataset.lower()]):
+                for out in tqdm(loader_full_dataset[dataset.lower()](batch_size, img_size, project_folder=project_folder, data_folder=data_folder, model_name=type_)):
                     if len(out) == 2:
                         data, target = out
                     elif len(out) == 3:
@@ -111,7 +111,7 @@ class TemperatureWrapper(nn.Module):
         else:
             print('Saving temperature file', temperature_file)
             with torch.no_grad():
-                for out in tqdm(loader(batch_size, img_size, project_folder=project_folder, data_folder=data_folder, model_name=type_)[dataset.lower()]):
+                for out in tqdm(loader[dataset.lower()](batch_size, img_size, project_folder=project_folder, data_folder=data_folder, model_name=type_)):
                     if len(out) == 2:
                         data, target = out
                     elif len(out) == 3:

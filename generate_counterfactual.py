@@ -5,30 +5,20 @@ from torchvision import transforms
 from blended_diffusion.optimization import DiffusionAttack
 from blended_diffusion.optimization.arguments import get_arguments
 from configs import get_config
-from counterfactual_utils.datasets.paths import get_imagenet_path
-from counterfactual_utils.datasets.imagenet import get_imagenet_labels
-import counterfactual_utils.datasets as dl
+
 from counterfactual_utils.functions import blockPrint
 from counterfactual_utils.plot import _plot_counterfactuals
 import torch
-import torch.nn as nn
 import numpy as np
-import pandas as pd
 import os
 import pathlib
 import matplotlib as mpl
-import seaborn as sns
 mpl.use('Agg')
-import matplotlib.pyplot as plt
-from counterfactual_utils.load_trained_model import load_model
 from tqdm import trange
 from torchvision.transforms import functional as TF
-import cv2
 from PIL import Image
 from time import sleep
 from counterfactual_utils.train_types.helpers import create_attack_config, get_adversarial_attack
-from matplotlib.colors import LinearSegmentedColormap
-from skimage import feature, transform
 
 from counterfactual_utils.Evaluator import Evaluator
 
@@ -79,7 +69,7 @@ if __name__ == '__main__':
     
     #Reading and storing image samples in tensors for processing 
     filenames = os.listdir(hps.image_dir)
-    filenames = sorted(filenames)[:2]
+    filenames = sorted(filenames)
     print(filenames)
 
     # Counterfactuals are generated to all classes 
@@ -106,15 +96,14 @@ if __name__ == '__main__':
         print('prepending labels_tensor', labels_tensor.shape)
         labels_tensor = torch.cat([torch.tensor(label).unsqueeze(dim=0), labels_tensor], 0)
         print('prepending labels_tensor', labels_tensor.shape)
-        
-        ##TO DO: uncomment after adding masks folder
-        # if dataset.lower() == 'eyepacs' and hps.method.lower() == 'svces':
-        #     mask_pil = Image.open(f'masks_eyepacs/{img_name}')
-        #     mask_pil = mask_pil.resize((img_size, img_size), Image.LANCZOS)  # type: ignore
-        #     mask_image = TF.to_tensor(mask_pil).to(device).unsqueeze(0)
-        #     print('prepending img', masks.shape)
-        #     masks = torch.cat([mask_image, masks.to(device)], 0)
-        #     print('prepending img', masks.shape)
+
+        if dataset.lower() == 'eyepacs' and hps.method.lower() == 'svces':
+            mask_pil = Image.open(f'fundus_masks/{img_name}')
+            mask_pil = mask_pil.resize((img_size, img_size), Image.LANCZOS)  # type: ignore
+            mask_image = TF.to_tensor(mask_pil).to(device).unsqueeze(0)
+            print('prepending img', masks.shape)
+            masks = torch.cat([mask_image, masks.to(device)], 0)
+            print('prepending img', masks.shape)
 
     #Defining target classes here, counterfactuals are generated to all classes 
     print('prepending target', targets_tensor.shape)
@@ -163,10 +152,12 @@ if __name__ == '__main__':
         with torch.no_grad():
 
             model_bs = bs
-            if hps.second_classifier_type == -1:
-                dir = f'{out_dir}/Retina_{hps.method}_{hps.classifier_type}'
-            else:
-                dir = f'{out_dir}/Retina_{hps.method}_{hps.classifier_type}_{hps.second_classifier_type}'
+            sub_dir = hps.config.split('.')[0]
+            dir = f'{out_dir}/{sub_dir}'
+            # if hps.second_classifier_type == -1:
+            #     dir = f'{out_dir}/Retina_{hps.method}_{hps.classifier_type}'
+            # else:
+            #     dir = f'{out_dir}/Retina_{hps.method}_{hps.classifier_type}_{hps.second_classifier_type}'
             
             pathlib.Path(dir).mkdir(parents=True, exist_ok=True)
             

@@ -38,6 +38,10 @@ For OCT scans, counterfactuals can be generated to 4 different classes: "normal"
 
 ### Requirements and installations
 Link to the models and requirements will be provided here soon.
+Adversarially robust models are trained using pretrained weights on ImageNet data from the [robustness library](https://github.com/MadryLab/robustness).
+The model file for ImageNet L2 norm with $\varepsilon=3.0$ is a pre-requisite for loading the adversarially robust models trained on retinal fundus and OCT data. 
+Download [this](https://www.dropbox.com/s/knf4uimlqsi1yz8/imagenet_l2_3_0.pt?dl=0) to the directory ImageNet1000Models/MadryRobustRobustResNet50/.
+
 Diffusion models are in checkpoints/, fundus classifiers in EyePacsModels/ and OCT classifiers in OCTMOdels/. The MadryRobustNet which is pretrained on ImageNet with adversarially robust losses is present in ImageNet1000Models/. The classifier directories also contain the temperature files. 
  
 ### Generate diffusion counterfactuals 

@@ -3,21 +3,13 @@ import pandas as pd
 import os
 import pathlib
 import matplotlib as mpl
-import seaborn as sns
 mpl.use('Agg')
 import matplotlib.pyplot as plt
-from counterfactual_utils.load_trained_model import load_model
 from tqdm import trange
-from torchvision.transforms import functional as TF
-import cv2
 from PIL import Image
-from time import sleep
-from counterfactual_utils.train_types.helpers import create_attack_config, get_adversarial_attack
 from matplotlib.colors import LinearSegmentedColormap
 from skimage import feature, transform
 import torch
-
-
 
 plot = False
 plot_top_imgs = True
@@ -146,9 +138,8 @@ def _plot_counterfactuals(dir, original_imgs, orig_labels, masks, targets,
                 save_diff_image(diff_scaled, overlay, dir, name_str)
             
             ### Saving counterfactual image
-            ### TO DO: uncomment after adding masks folder
-            # if 'svce' in method_descr and 'eyepacs' in dir.lower():
-            #     img = img * mask_original 
+            if 'svce' in method_descr and 'eyepacs' in dir.lower():
+                img = img * mask_original
             save_image(img, dir, name_str)
             
     #Saving predictions, probabilities of predicted class for both original and counterfactual 

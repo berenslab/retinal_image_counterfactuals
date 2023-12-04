@@ -160,6 +160,7 @@ cython_debug/
 #.idea/
 
 # Data and model directories
+archiv/
 EyePacsModels/
 EyePacsVCEs/
 FundusCounterfactuals/
@@ -171,3 +172,4 @@ ImageNet1000Models/
 EyePacsModels.zip
 OCTModels.zip
 checkpoints.zip
+ImageNet1000Models.zip
