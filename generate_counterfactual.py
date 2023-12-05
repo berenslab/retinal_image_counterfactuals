@@ -39,7 +39,9 @@ def set_device(hps):
     return device, num_devices 
 
 if __name__ == '__main__':
-    hps = get_config(get_arguments())
+    args = get_arguments()
+    hps = get_config(args)
+    
     print(hps.save_diffs)
 
     if not hps.verbose:
@@ -115,6 +117,11 @@ if __name__ == '__main__':
 
     imgs = imgs[:num_imgs]
     targets_tensor = targets_tensor[:num_imgs]
+    
+    #Directory to save images 
+    sub_dir = args.config.split('.')[0]
+    dir = f'{out_dir}/{sub_dir}'
+    pathlib.Path(dir).mkdir(parents=True, exist_ok=True)
 
     use_diffusion = False
     for method in [hps.method]:
@@ -152,14 +159,6 @@ if __name__ == '__main__':
         with torch.no_grad():
 
             model_bs = bs
-            sub_dir = hps.config.split('.')[0]
-            dir = f'{out_dir}/{sub_dir}'
-            # if hps.second_classifier_type == -1:
-            #     dir = f'{out_dir}/Retina_{hps.method}_{hps.classifier_type}'
-            # else:
-            #     dir = f'{out_dir}/Retina_{hps.method}_{hps.classifier_type}_{hps.second_classifier_type}'
-            
-            pathlib.Path(dir).mkdir(parents=True, exist_ok=True)
             
             out_imgs = torch.zeros((num_imgs, num_targets, num_radii) + img_dimensions)
             out_probabilities = torch.zeros((num_imgs, num_targets, num_radii, num_classes))

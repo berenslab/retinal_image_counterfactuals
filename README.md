@@ -42,13 +42,52 @@ Diffusion Counterfactuals from a DR fundus image:
 ## **Usage**
 
 ### Requirements and installations
-Link to the models and requirements will be provided here soon.
+Requirements can be found in requirements.txt and can be installed with: 
+```
+pip install -r requirements.txt
+```
 
 Adversarially robust models are trained using pretrained weights on ImageNet data from the [robustness library](https://github.com/MadryLab/robustness).
-The model file for ImageNet L2 norm with $\varepsilon=3.0$ is a pre-requisite for loading the adversarially robust models trained on retinal fundus and OCT data. 
-Download [this](https://www.dropbox.com/s/knf4uimlqsi1yz8/imagenet_l2_3_0.pt?dl=0) to the directory ImageNet1000Models/MadryRobustResNet50/.
+The model file for ImageNet L2 norm with $\varepsilon=3.0$ is a pre-requisite for loading the adversarially robust models trained on retinal fundus and OCT data.
 
-Diffusion models are in checkpoints/, fundus classifiers in EyePacsModels/ and OCT classifiers in OCTModels/. The MadryRobustNet which is pretrained on ImageNet with adversarially robust losses is present in ImageNet1000Models/. The classifier directories also contain the temperature files. 
+Create a new directory *ImageNet1000Models/MadryRobustResNet50/* and download [this file](https://www.dropbox.com/s/knf4uimlqsi1yz8/imagenet_l2_3_0.pt?dl=0) to the directory *ImageNet1000Models/MadryRobustResNet50/*.
+
+
+Within the project directory download the diffusion models, EyePacs classifiers and OCT classifiers and unzip them. 
+Alternatively you may use these commands to download and uncompress the required models:
+```
+wget -O checkpoints.zip https://zenodo.org/records/10256824/files/checkpoints.zip?download=1
+unzip OCTModels.zip 
+```
+```
+wget -O EyePacsModels.zip https://zenodo.org/records/10256824/files/EyePacsModels.zip?download=1
+unzip EyePacsModels.zip
+```
+
+```
+wget -O OCTModels.zip https://zenodo.org/records/10256824/files/OCTModels.zip?download=1
+unzip OCTModels.zip
+```
+
+*checkpoints.zip* consists of 2 diffusion models: 
+
+Retinal fundus diffusion model: ema\_0.9999\_290000\_eyepacs\_extra\_data\_balancing\_4\_classes\_v1.pt
+OCT diffusion model: ema\_0.9999\_270000\_oct\_v1.pt
+
+*EyepacsModels.zip* consists of four models trained on EyePacs retinal fundus data set:
+
+Binary plain classifier: rmtIN1000:ResNet50/plain\_17-01-2023\_16:22:33/best.pth
+Binary robust classifier: MadryRobust:l2/\_temp\_TRADES\_02-06-2023\_12:10:59/best.pth
+5-class plain classifier: rmtIN1000:ResNet50/plain\_24-01-2023\_20:42:28/best.pth
+5-class robust classifier: MadryRobust:l2/\_temp\_TRADES\_17-02-2023\_18:30:38/best.pth
+
+*OCTModels.zip* consists of two model trained on Optical Coherence Tomography scans:
+
+4-class plain classifier: ResNet50/plain\_29-11-2022\_21:53:46/best.pth
+4-class robust classifier: ResNet50/\_temp\_TRADES\_02-12-2022\_15:53:20/best.pth
+
+*EyepacsModels.zip* and *OCTModels.zip* also contain the temperature files for all the models within that folder. 
+
  
 ### Generate diffusion counterfactuals 
 To generate fundus diffusion counterfactuals of the sample images provided in samples_fundus directory, run the following snippet
@@ -64,8 +103,8 @@ To generate OCT diffusion counterfactuals of the sample OCT images provided in s
 ```
 python generate_counterfactuals.py --config 'oct_dvces_4class_cone_proj.yml' --denoise_dist_input --batch_size 4
 ```
-Fundus counterfactuals are saved in FundusCounterfactuals/ and OCT counterfactuals are saved in OCTCounterfactuals/. A .csv file with model predictions and probabilities on both original image and generated counterfactual is also saved to the respective directories. 
+Fundus counterfactuals are saved in *FundusCounterfactuals/* and OCT counterfactuals are saved in *OCTCounterfactuals/*. A .csv file with model predictions and probabilities on both original image and generated counterfactual is also saved to the respective directories. 
 
-Other configuration files for 5-class counterfactuals and generating sparse counterfactuals are present in configs/. 
+Other configuration files for 5-class counterfactuals and generating sparse counterfactuals are present in *configs/*. 
 
 
