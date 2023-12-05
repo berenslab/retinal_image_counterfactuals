@@ -34,9 +34,27 @@ Diffusion Counterfactuals from a DR fundus image:
 </p>
 
 ### OCT counterfactuals
+
+Diffusion Counterfactuals from a healthy OCT image:
 <p align="center">
-  <img src="readme_images/oct_counterfactuals_example1.png" />
+  <img src="readme_images/oct_counterfactuals1.png" />
 </p>
+
+Diffusion Counterfactuals from an OCT image showing CNV:
+<p align="center">
+  <img src="readme_images/oct_counterfactuals2.png" />
+</p>
+
+Diffusion Counterfactuals from a OCT image showing drusen:
+<p align="center">
+  <img src="readme_images/oct_counterfactuals3.png" />
+</p>
+
+Diffusion Counterfactuals from an OCT image showing DME:
+<p align="center">
+  <img src="readme_images/oct_counterfactuals4.png" />
+</p>
+
 
 
 ## **Usage**
