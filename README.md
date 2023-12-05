@@ -71,7 +71,7 @@ unzip OCTModels.zip
 
 *checkpoints.zip* consists of 2 diffusion models: 
 
-Retinal fundus diffusion model: ema\_0.9999\_290000\_eyepacs\_extra\_data\_balancing\_4\_classes\_v1.pt
+Retinal fundus diffusion model: ema\_0.9999\_290000\_eyepacs\_extra\_data\_balancing\_4\_classes\_v1.pt  
 OCT diffusion model: ema\_0.9999\_270000\_oct\_v1.pt
 
 *EyepacsModels.zip* consists of four models trained on EyePacs retinal fundus data set:
