@@ -76,15 +76,15 @@ OCT diffusion model: ema\_0.9999\_270000\_oct\_v1.pt
 
 *EyepacsModels.zip* consists of four models trained on EyePacs retinal fundus data set:
 
-Binary plain classifier: rmtIN1000:ResNet50/plain\_17-01-2023\_16:22:33/best.pth
-Binary robust classifier: MadryRobust:l2/\_temp\_TRADES\_02-06-2023\_12:10:59/best.pth
-5-class plain classifier: rmtIN1000:ResNet50/plain\_24-01-2023\_20:42:28/best.pth
-5-class robust classifier: MadryRobust:l2/\_temp\_TRADES\_17-02-2023\_18:30:38/best.pth
+Binary plain classifier: rmtIN1000:ResNet50/plain\_17-01-2023\_16:22:33/best.pth  
+Binary robust classifier: MadryRobust:l2/\_temp\_TRADES\_02-06-2023\_12:10:59/best.pth  
+5-class plain classifier: rmtIN1000:ResNet50/plain\_24-01-2023\_20:42:28/best.pth  
+5-class robust classifier: MadryRobust:l2/\_temp\_TRADES\_17-02-2023\_18:30:38/best.pth  
 
 *OCTModels.zip* consists of two model trained on Optical Coherence Tomography scans:
 
-4-class plain classifier: ResNet50/plain\_29-11-2022\_21:53:46/best.pth
-4-class robust classifier: ResNet50/\_temp\_TRADES\_02-12-2022\_15:53:20/best.pth
+4-class plain classifier: ResNet50/plain\_29-11-2022\_21:53:46/best.pth  
+4-class robust classifier: ResNet50/\_temp\_TRADES\_02-12-2022\_15:53:20/best.pth  
 
 *EyepacsModels.zip* and *OCTModels.zip* also contain the temperature files for all the models within that folder. 
 
