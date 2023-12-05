@@ -53,7 +53,7 @@ The model file for ImageNet L2 norm with $\varepsilon=3.0$ is a pre-requisite fo
 Create a new directory *ImageNet1000Models/MadryRobustResNet50/* and download [this file](https://www.dropbox.com/s/knf4uimlqsi1yz8/imagenet_l2_3_0.pt?dl=0) to the directory *ImageNet1000Models/MadryRobustResNet50/*.
 
 
-Within the project directory download the diffusion models, EyePacs classifiers and OCT classifiers and unzip them. 
+Within the project directory, download the [diffusion models](https://zenodo.org/records/10256824/files/checkpoints.zip?download=1), [EyePacs classifiers](https://zenodo.org/records/10256824/files/EyePacsModels.zip?download=1) and [OCT classifiers](https://zenodo.org/records/10256824/files/OCTModels.zip?download=1) and unzip them. 
 Alternatively you may use these commands to download and uncompress the required models:
 ```
 wget -O checkpoints.zip https://zenodo.org/records/10256824/files/checkpoints.zip?download=1
