@@ -17,7 +17,7 @@ For OCT scans, counterfactuals can be generated to 4 different classes: "normal"
   <img src="readme_images/diffusionvce_summary.png" />
 </p>
 
-To generate counterfactuals using diffusion models and classifiers, we use the method proposed in the NeurIPS paper [Diffusion Visual Counterfactual Explanations](https://proceedings.neurips.cc/paper_files/paper/2022/hash/025f7165a452e7d0b57f1397fed3b0fd-Abstract-Conference.html). The main components are diffusion models, plain classifiers and adversarially robust classifiers. The reverse diffusion of the diffusion model is modified during sampling by slightly shifting the mean of the reverse transition probabilties. The shift in the mean is determined by the gradients of a classifier with respect to the image. Instead of directly using the gradients of the plain or adversarially robust classifier, we use the gradients of a adversarially robust classifier projected on a cone around the gradients of a plain classifier. 
+To generate counterfactuals using diffusion models and classifiers, we use the method proposed in the NeurIPS paper [Diffusion Visual Counterfactual Explanations](https://proceedings.neurips.cc/paper_files/paper/2022/hash/025f7165a452e7d0b57f1397fed3b0fd-Abstract-Conference.html)<sup>1</sup>. The main components are diffusion models, plain classifiers and adversarially robust classifiers. The reverse diffusion of the diffusion model is modified during sampling by slightly shifting the mean of the reverse transition probabilties. The shift in the mean is determined by the gradients of a classifier with respect to the image. Instead of directly using the gradients of the plain or adversarially robust classifier, we use the gradients of a adversarially robust classifier projected on a cone around the gradients of a plain classifier. 
 
 ## **Examples**
 
@@ -108,7 +108,9 @@ Binary robust classifier: MadryRobust:l2/\_temp\_TRADES\_02-06-2023\_12:10:59/be
 
  
 ### Generate diffusion counterfactuals 
-To generate fundus diffusion counterfactuals of the sample images provided in samples_fundus directory, run the following snippet
+We have provided image samples for fundus from the DDR<sup>2</sup> data set and image samples for OCT from the Kermany<sup>3</sup> OCT dataset. The commands below will generate counterfactuals of all these samples to all the classes. Fundus counterfactuals are saved in *FundusCounterfactuals/* and OCT counterfactuals are saved in *OCTCounterfactuals/*. A .csv file with model predictions and probabilities on both original image and generated counterfactual is also saved to the respective directories. 
+
+To generate fundus diffusion counterfactuals of the sample images provided in samples_fundus directory, run the following command:
 ```
 python generate_counterfactuals.py --config 'eyepacs_dvces_binary_cone_proj.yml' --denoise_dist_input --batch_size 5
 ``` 
@@ -117,12 +119,15 @@ To save difference maps, use the flag --save_diffs:
 python generate_counterfactuals.py --config 'eyepacs_dvces_binary_cone_proj.yml' --denoise_dist_input --batch_size 5 --save_diffs
 ```
 
-To generate OCT diffusion counterfactuals of the sample OCT images provided in samples_oct directory, run the following code snippet:
+To generate OCT diffusion counterfactuals of the sample OCT images provided in samples_oct directory, run the following command:
 ```
 python generate_counterfactuals.py --config 'oct_dvces_4class_cone_proj.yml' --denoise_dist_input --batch_size 4
 ```
-Fundus counterfactuals are saved in *FundusCounterfactuals/* and OCT counterfactuals are saved in *OCTCounterfactuals/*. A .csv file with model predictions and probabilities on both original image and generated counterfactual is also saved to the respective directories. 
-
-Other configuration files for 5-class counterfactuals and generating sparse counterfactuals are present in *configs/*. 
+Other configuration files for 5-class counterfactuals and generating sparse counterfactuals for fundus images are present in *configs/*. 
 
 
+## **References**
+
+1. Augustin M, Boreiko V, Croce F, Hein M. Diffusion Visual Counterfactual Explanations. NeurIPS, 2022.
+2. Li T, Gao Y, Wang K, Guo S, Liu H, Kang H. Diagnostic Assessment of Deep Learning Algorithms for Diabetic Retinopathy Screening. Information Sciences, 2019. 
+3. Kermany D, Goldbaum M, Cai W et al. Identifying Medical Diagnoses and Treatable Diseases by Image-Based Deep Learning. Cell, 2018.
